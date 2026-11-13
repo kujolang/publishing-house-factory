@@ -1,0 +1,36 @@
+{
+  "sourceRun": "20261113-065550-16f495f8",
+  "durationSeconds": 53.2,
+  "frames": 1596,
+  "before": {
+    "sha256": "34406dd82bef8cc8061232134d094cfb96af9e6c104985c15d3d46e58d791a8b",
+    "grayStartupFrames": 32,
+    "affectedSeconds": [
+      34.5,
+      35.533
+    ]
+  },
+  "after": {
+    "grayStartupFrames": 0,
+    "blackFrames": 0,
+    "blankWhiteFrames": 0,
+    "isolatedFlashCandidates": 0
+  },
+  "cutTimesSeconds": [
+    11.6,
+    21.68,
+    34.48,
+    47.52
+  ],
+  "repairs": [
+    "Capture starts only after page, fonts and scroll settle",
+    "Timestamped Chrome screencast replaces estimated preroll trimming",
+    "Product footage remains at scale 1 across cuts",
+    "Station selections preserve page position",
+    "Bumper logo and call to action visible on first frame"
+  ],
+  "audio": "Existing narration and music reused; no new voice generation",
+  "limits": "Temporal scan is heuristic, supplemented by visual inspection of every cut; listening not attested.",
+  "allFourCutStripsVisuallyInspected": true,
+  "mobileScanPassed": true
+}

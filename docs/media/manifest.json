@@ -6,13 +6,13 @@
   "height": 1080,
   "fps": 30,
   "sourceRun": "20261113-065550-16f495f8",
-  "attachmentUrl": "https://github.com/user-attachments/assets/a61f56a3-fbdc-4e82-9f97-0d50f012129c",
+  "attachmentUrl": "https://github.com/user-attachments/assets/6da6d38e-cc39-4e97-8e90-a47fa8fc7e96",
   "narration": {
     "provider": "ElevenLabs",
     "voice": "Siren",
     "voiceId": "eXpIbVcVbLo8ZJQDlDnl",
     "model": "eleven_v4",
-    "newTakes": 5,
+    "newTakes": 0,
     "characters": 736,
     "takes": [
       {
@@ -55,18 +55,19 @@
         "audio_sha256": "7dd58f47cfec50ca7b7d253e7efcec8d84a82b04472df6c177f7f8d66fcfca62",
         "input_sha256": "bcf1e5e4fe44da8392c3a8135d6d35f30333d7c425b2fb9a322f9340c27209a0"
       }
-    ]
+    ],
+    "reusedTakes": 5
   },
   "files": [
     {
       "file": "publishing-house-factory-demo-mobile.mp4",
-      "sha256": "669506a4066569fc56e631de8fcfa1c2c61f05daf0db80d28c6ab18ea35ec365",
-      "bytes": 3046692
+      "sha256": "5fd6291341c2262f67716878d03fc7a5f14070422c7df484465de5e17fb0d5e7",
+      "bytes": 2310191
     },
     {
       "file": "publishing-house-factory-demo.mp4",
-      "sha256": "34406dd82bef8cc8061232134d094cfb96af9e6c104985c15d3d46e58d791a8b",
-      "bytes": 16636194
+      "sha256": "050ea2aeebb4cb25d58dfdb82e066c2e72387b2ab243ac04233f2f973b851784",
+      "bytes": 14450269
     }
   ],
   "technical": "PASS",
@@ -76,5 +77,6 @@
     "integratedLUFS": -16.28,
     "truePeakDbTP": -1.83
   },
-  "sourceNotes": "Real browser interactions with retained campaign evidence: six output previews, connected agent stations, adaptation review v1 to v2, draft dialogs and human review gate. No simulated agent execution, added captions or scene labels. Kujo bumper uses original logo and Departure Mono."
+  "sourceNotes": "Real browser interactions with retained campaign evidence: six output previews, connected agent stations, adaptation review v1 to v2, draft dialogs and human review gate. No simulated agent execution, added captions or scene labels. Kujo bumper uses original logo and Departure Mono.",
+  "visualRevision": "Stable post-load captures; fixed-size cuts; startup preroll removed. Narration and scene timing preserved. Bumper has no empty lead-in."
 }
