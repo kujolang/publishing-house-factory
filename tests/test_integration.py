@@ -39,7 +39,10 @@ class Integration(unittest.TestCase):
         # Use real phases and canonical records, with synthetic model proposals only.
         for phase in op.PHASES[:7]:
             request={'state_root':str(state),'phase':phase}
-            with patch('editorial.propose',side_effect=proposal):result=perform(request)
+            with patch('editorial.propose',side_effect=proposal):
+                result=perform(request)
+                if phase=='evidence-dossier':
+                    self.assertEqual(perform(request),result)
             write(state/'phases'/f'{phase}.json',{'result':result})
         manifest_hash=verify_package(state)
         for name in ['dossier','galleypack','bluepencil','versionseal']:
@@ -51,6 +54,8 @@ class Integration(unittest.TestCase):
         h.tick(1,False)
         self.assertEqual(read(state/'items/campaign.json')['status'],'approval_required')
         with self.assertRaises(op.OperatorError):h.approve('campaign','0'*64,'test-reviewer')
+        with self.assertRaises(ValueError):
+            tool(state,'versionseal','approve',{'human_actor':'test-only','package_id':'campaign','package_version':'1','manifest_checksum':'0'*64,'destination':'local-review-only','action':'publish'},record_id='approve-invalid-test',artifact=state/'output/package.json',actor='test-only')
         (state/'output/newsletter.md').write_text('tampered')
         with self.assertRaisesRegex(ValueError,'drift'):verify_package(state)
         with self.assertRaises(ValueError):tool(state,'galleypack','validate')
@@ -68,6 +73,15 @@ class Integration(unittest.TestCase):
         p=subprocess.run([str(ROOT/'bin/phase-adapter')],input=json.dumps({'schema_name':'publishing-house.phase-request','schema_version':'1.0.0','state_root':str(self.root),'phase':'approval-publication'}),text=True,capture_output=True)
         self.assertNotEqual(p.returncode,0)
         self.assertIn('disabled',json.loads(p.stdout)['error'])
+
+    def test_cached_phase_rejects_changed_artifact(self):
+        output=write(self.root/'output/article.md','before')
+        receipt_file=write(self.root/'phases/primary-piece.json',{'outputs':[{'path':'output/article.md','sha256':digest(output)}]})
+        request={'schema_name':'publishing-house.phase-request','schema_version':'1.0.0','state_root':str(self.root),'phase':'asset-production','item':{'id':'campaign','receipts':[{'artifact':str(receipt_file),'sha256':digest(receipt_file)}]}}
+        output.write_text('after')
+        p=subprocess.run([str(ROOT/'bin/phase-adapter')],input=json.dumps(request),text=True,capture_output=True)
+        self.assertNotEqual(p.returncode,0)
+        self.assertIn('Prior output changed',json.loads(p.stdout)['error'])
 
     def test_review_cannot_pass_with_blocking_findings(self):
         review={'verdict':'pass','findings':['Unsupported universal claim'],'dimensions':{d:'ADEQUATE' for d in DIMENSIONS}}

@@ -16,7 +16,7 @@ try:
     started=time.monotonic()
     # Verify every completed phase and its retained output before resuming.
     for receipt in request['item'].get('receipts',[]):
-        p=Path(receipt['artifact'])
+        p=Path(receipt['artifact']).resolve()
         if not p.is_relative_to(state) or digest(p)!=receipt['sha256']:
             raise ValueError('Prior phase artifact changed')
         for entry in read(p).get('outputs',[]):
@@ -38,5 +38,8 @@ try:
         write(artifact,{'phase':phase,'result':result,'durationSeconds':round(time.monotonic()-started,3),'outputs':paths})
     print(json.dumps({'ok':True,'data':{'schema_name':'publishing-house.phase-receipt','schema_version':'1.0.0','item_id':request['item']['id'],'phase':phase,'artifact':str(artifact),'sha256':digest(artifact),'external_effect':False}}))
 except Exception as e:
+    if 'state' in locals() and state.is_dir():
+        import uuid
+        write(state/'failures'/f'{uuid.uuid4().hex}.json',{'phase':request.get('phase'),'error':str(e)[:800]})
     print(json.dumps({'ok':False,'error_code':'factory_phase_failed','error':str(e)[:800]}))
     sys.exit(1)
