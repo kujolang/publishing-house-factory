@@ -19,6 +19,7 @@
   "constraints": [
     "Distinguish bare Ubuntu installation from prerequisites-already-installed timings and extra sign-in.",
     "The owner reported a busy host and limited available memory. Contention and swapping were not measured.",
-    "Rendered videos still require perceptual review. Do not imply autonomous approval."
+    "Rendered videos still require perceptual review. Do not imply autonomous approval.",
+    "Include a source-backed trial path: repository URL, clone, npm ci, setup, login, doctor, verify, startup, local viewer address, and the example run. The evidence ledger must capture the README command blocks so these instructions can be cited."
   ]
 }

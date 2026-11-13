@@ -17,5 +17,5 @@ try {
  const events=p.stdout.split('\n').filter(Boolean).map(x=>{try{return JSON.parse(x)}catch{return {}}});
  if(events.some(e=>e.type==='item.completed'&&['command_execution','file_change','mcp_tool_call','web_search'].includes(e.item?.type)))throw Error('Worker attempted a forbidden tool');
  const usage=events.filter(e=>e.type==='turn.completed').map(e=>e.usage);
- console.log(JSON.stringify({proposal:JSON.parse(fs.readFileSync(path.join(tmp,'result.json'))),usage,role,provider:'codex',model:process.env.PUBLISHING_MODEL||'account-default'}));
+ console.log(JSON.stringify({proposal:JSON.parse(fs.readFileSync(path.join(tmp,'result.json'))),usage,role:input.role,provider:'codex',model:process.env.PUBLISHING_MODEL||'account-default'}));
 } catch(e){console.error(e.message);process.exitCode=1;}finally{fs.rmSync(tmp,{recursive:true,force:true});}
