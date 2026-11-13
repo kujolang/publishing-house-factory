@@ -7,7 +7,7 @@
 
 Give your editorial team a sourced brief. Get an article, newsletter, social posts and a landing page you can inspect before publishing.
 
-https://github.com/user-attachments/assets/70d1afe4-b7b4-4951-a14d-ad50c697357f
+https://github.com/user-attachments/assets/a61f56a3-fbdc-4e82-9f97-0d50f012129c
 
 [Download the video for your phone — 720p](https://github.com/kujolang/publishing-house-factory/raw/refs/heads/main/docs/media/publishing-house-factory-demo-mobile.mp4) · [1080p original](https://github.com/kujolang/publishing-house-factory/raw/refs/heads/main/docs/media/publishing-house-factory-demo.mp4) · [Video source and review notes](docs/DEMO.md)
 

@@ -1,80 +1,80 @@
 {
   "schema": "kujo.publishing-house-factory.demo/v1",
   "title": "Publishing House Factory demo",
-  "durationSeconds": 48.9,
+  "durationSeconds": 53.2,
   "width": 1920,
   "height": 1080,
   "fps": 30,
   "sourceRun": "20261113-065550-16f495f8",
-  "attachmentUrl": "https://github.com/user-attachments/assets/70d1afe4-b7b4-4951-a14d-ad50c697357f",
+  "attachmentUrl": "https://github.com/user-attachments/assets/a61f56a3-fbdc-4e82-9f97-0d50f012129c",
   "narration": {
     "provider": "ElevenLabs",
     "voice": "Siren",
     "voiceId": "eXpIbVcVbLo8ZJQDlDnl",
     "model": "eleven_v4",
     "newTakes": 5,
-    "characters": 683,
+    "characters": 736,
     "takes": [
       {
         "provider": "ElevenLabs",
         "voice_id": "eXpIbVcVbLo8ZJQDlDnl",
         "generation_tier": "creator",
-        "generated_at": 1794569436.6996548,
-        "audio_sha256": "6af31bdff630a6b91088f614707603e7edd43b7ecc84fdf88c30146cc5d212ff",
-        "input_sha256": "88242a606789ba7a1fd5d97d6be652c03664c553dd6a886d1c0330625a9cb2c9"
+        "generated_at": 1794570517.7456572,
+        "audio_sha256": "2d5134902ade058be55d5285af5b34d042f7de64d198aae10560bf76b0262620",
+        "input_sha256": "8a28f8cc2a64f71f7f9448db06be6eaf0accc807cd8bf020d4ae2cb930138a2d"
       },
       {
         "provider": "ElevenLabs",
         "voice_id": "eXpIbVcVbLo8ZJQDlDnl",
         "generation_tier": "creator",
-        "generated_at": 1794569444.8020291,
-        "audio_sha256": "32d518e8ccd6bf9afaf860cb669ac687496158bd3d2047cc80affedc7322f7e8",
-        "input_sha256": "e088d67d6d19449042322a31e8d3b614f921ba46640ae0125c63a568774af05f"
+        "generated_at": 1794570508.1207108,
+        "audio_sha256": "053e50389474a9ad2bc42f5d26526c4836d0d89e44ab14638b901f52b79d3b6a",
+        "input_sha256": "c5ded292503e00f82fe0fc46a7771d9e8afb5adc624ff4c00890374c1cabfcf6"
       },
       {
         "provider": "ElevenLabs",
         "voice_id": "eXpIbVcVbLo8ZJQDlDnl",
         "generation_tier": "creator",
-        "generated_at": 1794569434.005342,
-        "audio_sha256": "35bf3590c89c9e174006245bda6f0e681135c02a9bb5db02ec29de918309bd3a",
-        "input_sha256": "f8db1d8b895140b6ca76410890d7f57ddf2e09f97cc66cf5939472e6a69b69bb"
+        "generated_at": 1794570505.2954628,
+        "audio_sha256": "b648a52f31742cc10349a00be2df81b6657b6bdf89e6747ecb494a0533f6d5ed",
+        "input_sha256": "b617eb4285c5216921630b5a45bb5979e7fed1e5d2180566130965adb59f27f5"
       },
       {
         "provider": "ElevenLabs",
         "voice_id": "eXpIbVcVbLo8ZJQDlDnl",
         "generation_tier": "creator",
-        "generated_at": 1794569442.934873,
-        "audio_sha256": "34789bc5b2a8c03ff57833f928047f363e3cd3e4ec8c86c0c4eeabd2a428e022",
-        "input_sha256": "8865b5de5d70753dcd89c20da44203afcc2fcaf500b166390ea9e36c2287ee9e"
+        "generated_at": 1794570515.873934,
+        "audio_sha256": "dcb05ea585a503919eef86b9a3cfa111c956eb75ae37fbc222608384ca93f055",
+        "input_sha256": "e09661346783af8b0c3f5becb4341dc02b3720a7352b8e0f0dd431b7dcef25ea"
       },
       {
         "provider": "ElevenLabs",
         "voice_id": "eXpIbVcVbLo8ZJQDlDnl",
         "generation_tier": "creator",
-        "generated_at": 1794569439.781118,
-        "audio_sha256": "0e3d20d494de4a586ac557ddfa0fb34ba57378731249e7ddd5c6eddcfd04c102",
-        "input_sha256": "48a7dc525ed07a68aa50f9e6590253da3c92ecbc5efd5901437951e105a3e9fb"
+        "generated_at": 1794570511.773786,
+        "audio_sha256": "7dd58f47cfec50ca7b7d253e7efcec8d84a82b04472df6c177f7f8d66fcfca62",
+        "input_sha256": "bcf1e5e4fe44da8392c3a8135d6d35f30333d7c425b2fb9a322f9340c27209a0"
       }
     ]
   },
   "files": [
     {
       "file": "publishing-house-factory-demo-mobile.mp4",
-      "sha256": "2ad2b56ef9fe08f6daf0c64b1ff5518b5ec8d2cb12731a850edeb13e13abdb0c",
-      "bytes": 2075711
+      "sha256": "669506a4066569fc56e631de8fcfa1c2c61f05daf0db80d28c6ab18ea35ec365",
+      "bytes": 3046692
     },
     {
       "file": "publishing-house-factory-demo.mp4",
-      "sha256": "cf3b0633209dff3c4275d255c3cec228a0fe1a713a81a864f86835b8da2eb267",
-      "bytes": 13268265
+      "sha256": "34406dd82bef8cc8061232134d094cfb96af9e6c104985c15d3d46e58d791a8b",
+      "bytes": 16636194
     }
   ],
   "technical": "PASS",
   "humanListening": "not_attested",
   "reviewStatus": "REVIEW_INCOMPLETE",
   "audio": {
-    "integratedLUFS": -14.58,
-    "truePeakDbTP": -1.75
+    "integratedLUFS": -16.28,
+    "truePeakDbTP": -1.83
   },
-  "sourceNotes": "Edited held browser captures from the real completed campaign. Enlarged document styles do not change text. No added captions or scene labels. The review shot shows the actual first adaptation review; the landing page is the final output. The factory remains paused for human approval."
+  "sourceNotes": "Real browser interactions with retained campaign evidence: six output previews, connected agent stations, adaptation review v1 to v2, draft dialogs and human review gate. No simulated agent execution, added captions or scene labels. Kujo bumper uses original logo and Departure Mono."
 }

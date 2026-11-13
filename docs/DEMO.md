@@ -1,23 +1,25 @@
 # Publishing House Factory demo
 
-The 49-second walkthrough uses newly generated ElevenLabs Siren narration, a quiet original Kujo music bed and the Kujo K bumper in Departure Mono. There are no added captions or scene labels.
+This 53-second walkthrough shows what a publishing team gets from one sourced brief: an article, a newsletter, three social posts and a landing page. ElevenLabs Siren narrates the actual interface, with a quiet original Kujo music bed and a Kujo K bumper in Departure Mono. There are no added captions or scene labels.
 
 [Download the phone version](media/publishing-house-factory-demo-mobile.mp4) · [Download the 1080p original](media/publishing-house-factory-demo.mp4) · [Editable HyperFrames source](media/publishing-house-demo-source.zip) · [Narration](media/narration.txt) · [Media manifest](media/manifest.json)
 
 ## What the video shows
 
-The first four shots use actual browser captures from run `20261113-065550-16f495f8`: the Factory Floor, article, first adaptation review and final landing page. Document text was enlarged for capture without changing its contents. These are held, edited views of retained evidence, not an uninterrupted live execution. The example campaign happens to explain VideoOps Factory; the software producing it is Publishing House Factory.
+The cut opens with six campaign previews, follows the connected agent stations, shows an actual review correction, and opens finished drafts. The first four scenes record browser interactions with retained evidence from run `20261113-065550-16f495f8`. They are an edited walkthrough of a completed campaign, not a live replay of agents working.
 
-The reviewers really requested revisions. The demo does not stage an error or imply that model review authorizes publication. The campaign remains at `approval_required`.
+The example campaign explains VideoOps Factory; Publishing House Factory produced it. The first adaptation review requested missing setup instructions. The next version passed model review. Both decisions remain visible in the review desk, alongside three article reviews. Passing model review does not authorize publication. The campaign remains at `approval_required`, and the shipped tool has no publishing adapter.
 
-The closing bumper uses the existing Kujo SVG and Departure Mono assets. Its call to action is “Build your next factory with Kujo,” followed by `kujolang.ai`. The source archive includes the composition, local assets, original voice takes, font license, timing plan and review notes. Open its `project` directory with HyperFrames to edit it.
+## Explore the floor
 
-## Technical checks and review limits
+Select a station to inspect its role and handoff. Open Campaign outputs to read the six drafts. Use Review desk to follow the rejected versions and passing revisions. The floor reads local run records every five seconds; it does not animate invented progress. It also handles unfinished and blocked runs.
 
-The 1080p export is 1920×1080 at 30fps, with H.264 video and AAC audio. The smaller preview uses 1280×720, H.264 Main level 3.1, yuv420p and AAC-LC. Both MP4s use faststart for browser playback.
+The closing bumper says “Build your next factory with Kujo,” followed by `kujolang.ai`. The source archive includes the composition, recordings, original voice takes, font license, timing plan and review notes. Open its `project` directory with HyperFrames to edit it.
 
-HyperFrames lint, browser checks, metadata validation and full decode passed. Source frames and the rendered bumper were inspected. Audio measured −14.58 LUFS integrated and −1.75 dBTP. All five narration takes have generation-time paid-tier receipts; no voice clone or new music-provider call was used.
+## Verification and limits
 
-Listening is not attested. Technical measurements and frame inspection are not independent human creative approval. Dense article and review shots establish the evidence; viewers can inspect the full text in the repository. The video manifest retains the exact hashes and this review limit.
+The 1080p export uses 1920×1080 at 30fps, H.264 video and AAC audio. The phone preview uses 1280×720, H.264 Main level 3.1, yuv420p and AAC-LC. Both files use faststart for browser playback.
 
-The public README player passed playback and seeking in desktop Chrome and WebKit phone emulation. The public phone download returned the exact local SHA-256 and supported HTTP 206 range requests. See [playback evidence](media/playback-verification.json). This is browser emulation, not a physical-phone test.
+Technical checks cover HyperFrames lint and browser validation, full video decode, frame inspection and audio measurements. UI checks cover station selection, output dialogs, review history, mobile width, empty and historical runs, and escaping untrusted titles. See the [media manifest](media/manifest.json) and [playback evidence](media/playback-verification.json) for the retained results.
+
+Listening is not attested. Frame inspection and technical checks are not independent human creative approval. Phone playback is tested through browser emulation, not a physical device.
