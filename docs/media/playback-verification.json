@@ -3,25 +3,25 @@
   "results": [
     {
       "name": "Chrome desktop",
-      "duration": 48.917,
-      "currentTime": 1.491376,
+      "duration": 53.205,
+      "currentTime": 1.017652,
       "width": 1280,
       "height": 720,
       "error": null,
       "seek": {
-        "time": 41.171703,
+        "time": 40,
         "error": null
       }
     },
     {
       "name": "WebKit phone emulation",
-      "duration": 48.9,
-      "currentTime": 1.98994757599315,
+      "duration": 53.2,
+      "currentTime": 1.990702431001976,
       "width": 1280,
       "height": 720,
       "error": null,
       "seek": {
-        "time": 41.210505308989546,
+        "time": 41.50104810600069,
         "error": null
       }
     }
@@ -29,12 +29,9 @@
   "listening": "not_attested",
   "phone": "emulation, not physical device",
   "download": {
-    "url": "https://github.com/kujolang/publishing-house-factory/raw/refs/heads/main/docs/media/publishing-house-factory-demo-mobile.mp4",
-    "status": 200,
-    "bytes": 2075711,
-    "sha256": "2ad2b56ef9fe08f6daf0c64b1ff5518b5ec8d2cb12731a850edeb13e13abdb0c",
-    "matchesLocal": true,
-    "rangeStatus": 206,
-    "rangeBytes": 1024
+    "sha256": "669506a4066569fc56e631de8fcfa1c2c61f05daf0db80d28c6ab18ea35ec365",
+    "bytes": 3046692,
+    "exactMatch": true,
+    "rangeStatus": 206
   }
 }
