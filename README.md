@@ -11,7 +11,7 @@ https://github.com/user-attachments/assets/70d1afe4-b7b4-4951-a14d-ad50c697357f
 
 [Download the video for your phone — 720p](https://github.com/kujolang/publishing-house-factory/raw/refs/heads/main/docs/media/publishing-house-factory-demo-mobile.mp4) · [1080p original](https://github.com/kujolang/publishing-house-factory/raw/refs/heads/main/docs/media/publishing-house-factory-demo.mp4) · [Video source and review notes](docs/DEMO.md)
 
-Publishing House Factory runs the existing Kujo Publishing House Operator with a live editorial adapter. It preserves sources, maps claims to exact excerpts, separates writing from review, and binds the resulting campaign to exact file hashes. The local Factory Floor shows real phase receipts and links to the work.
+Publishing House Factory runs the existing Kujo Publishing House Operator with a live editorial adapter. It preserves sources, maps claims to exact excerpts, separates writing from review, and binds the resulting campaign to exact file hashes. The local Factory Floor shows connected agent stations, six campaign previews and a review desk where you can trace corrections from one version to the next. Open a station to inspect its handoff, or open an output to read the draft.
 
 **Standalone local release.** This repository packages one editorial workflow. [Software Factory](https://github.com/kujolang/software-factory) and [VideoOps Factory](https://github.com/kujolang/videoops-factory) remain separate. These factories share Kujo tools and design patterns; they are not three copies of one domain controller.
 

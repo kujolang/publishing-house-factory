@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "stations": 6,
+  "outputs": 6,
+  "reviews": 5,
+  "desktopInteractions": true,
+  "mobileOverflow": false,
+  "modalEscape": true,
+  "pageErrors": [],
+  "historicalRuns": 4,
+  "emptyState": true,
+  "untrustedTitleEscaped": true,
+  "sourceRun": "20261113-065550-16f495f8",
+  "date": "2026-11-13"
+}
