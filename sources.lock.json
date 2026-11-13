@@ -1,0 +1,45 @@
+{
+  "schema": "kujo.publishing-house-factory.sources/v1",
+  "repositories": {
+    "kujo-workflows": {
+      "url": "https://github.com/kujolang/kujo-workflows.git",
+      "commit": "d766eae4fd9a131e51c34796d029fd3bc6974689"
+    },
+    "kujo-agents": {
+      "url": "https://github.com/kujolang/kujo-agents.git",
+      "commit": "a7e9d0236d6e64b5db30273b32f4ad8c124f5173"
+    },
+    "storydesk": {
+      "url": "https://github.com/kujolang/storydesk.git",
+      "commit": "31b4d2965c1a977c37fc9560cbc13480f7cf8f5b"
+    },
+    "dossier": {
+      "url": "https://github.com/kujolang/dossier.git",
+      "commit": "670def8c62e690bcd3c0936cd85b224257ca4a03"
+    },
+    "galleypack": {
+      "url": "https://github.com/kujolang/galleypack.git",
+      "commit": "f829584070b098488b7538f30ed6e97c32c62c0e"
+    },
+    "bluepencil": {
+      "url": "https://github.com/kujolang/bluepencil.git",
+      "commit": "88df35c3514c78fd986d750b3ff281ca280efabf"
+    },
+    "versionseal": {
+      "url": "https://github.com/kujolang/versionseal.git",
+      "commit": "f005374d72026a57c5246b6ed38473209e4bfc32"
+    },
+    "presswire": {
+      "url": "https://github.com/kujolang/presswire.git",
+      "commit": "2f8bd7054a62101ff3e97f3e1a0a61a77d35fe22"
+    },
+    "dispatch": {
+      "url": "https://github.com/kujolang/dispatch.git",
+      "commit": "18b5c737a73904ae942f0bd1c3baa1f77c2bfb40"
+    },
+    "agents-sdk": {
+      "url": "https://github.com/kujolang/agents-sdk.git",
+      "commit": "70cd1fb780cf102dd4d09d2d5ba4d24a85ce462c"
+    }
+  }
+}

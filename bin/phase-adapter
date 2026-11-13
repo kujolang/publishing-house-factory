@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+import sys
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'src'))
+import json,time
+from common import read,write,digest,confined,verify_package
+from editorial import perform
+try:
+    request=json.loads(sys.stdin.read(2000000))
+    if request['schema_name']!='publishing-house.phase-request' or request['schema_version']!='1.0.0':
+        raise ValueError('Unsupported phase request')
+    state=Path(request['state_root']).resolve()
+    phase=request['phase']
+    if phase not in ['commissioning','evidence-dossier','primary-piece','asset-production','editorial-review','adaptation','format-production']:
+        raise ValueError('Publication phases are disabled')
+    started=time.monotonic()
+    # Verify every completed phase and its retained output before resuming.
+    for receipt in request['item'].get('receipts',[]):
+        p=Path(receipt['artifact'])
+        if not p.is_relative_to(state) or digest(p)!=receipt['sha256']:
+            raise ValueError('Prior phase artifact changed')
+        for entry in read(p).get('outputs',[]):
+            if digest(confined(state,entry['path']))!=entry['sha256']:
+                raise ValueError('Prior output changed')
+    artifact=state/'phases'/f'{phase}.json'
+    if artifact.exists():
+        result=read(artifact)
+        for entry in result.get('outputs',[]):
+            if digest(confined(state,entry['path']))!=entry['sha256']:
+                raise ValueError('Cached phase output changed')
+        if phase=='format-production': verify_package(state)
+    else:
+        result=perform(request)
+        # Keep phase-specific immutable outputs; later stages never replace these files.
+        paths=[]
+        mapping={'primary-piece':['output/article-v1.md'],'editorial-review':['output/article.md','output/article.json'],'adaptation':[],'format-production':['output/package.json','output/newsletter.md','output/social.md','output/landing.html']}
+        for name in mapping.get(phase,[]): paths.append({'path':name,'sha256':digest(state/name)})
+        write(artifact,{'phase':phase,'result':result,'durationSeconds':round(time.monotonic()-started,3),'outputs':paths})
+    print(json.dumps({'ok':True,'data':{'schema_name':'publishing-house.phase-receipt','schema_version':'1.0.0','item_id':request['item']['id'],'phase':phase,'artifact':str(artifact),'sha256':digest(artifact),'external_effect':False}}))
+except Exception as e:
+    print(json.dumps({'ok':False,'error_code':'factory_phase_failed','error':str(e)[:800]}))
+    sys.exit(1)

@@ -1,0 +1,24 @@
+{
+  "schema": "kujo.publishing-house-factory.brief/v1",
+  "title": "Build a video team you can inspect",
+  "audience": "small teams producing software launch videos",
+  "objective": "Explain what VideoOps Factory does, its setup requirements, review limits, and how to try it. Produce a sourced article, newsletter, three social posts, and a local landing page.",
+  "voice": "Plain, direct, practical. Lead with the benefit. No invented first-person biography or hype.",
+  "sources": [
+    {
+      "id": "videoops",
+      "path": "sources/videoops-readme.txt",
+      "url": "https://github.com/kujolang/videoops-factory/blob/dcf2dc4fa7311f59ba3dd16f58a227439a155979/README.md"
+    },
+    {
+      "id": "benchmark",
+      "path": "sources/onboarding.txt",
+      "url": "https://github.com/kujolang/videoops-factory/blob/dcf2dc4fa7311f59ba3dd16f58a227439a155979/docs/ONBOARDING-BENCHMARK.md"
+    }
+  ],
+  "constraints": [
+    "Distinguish bare Ubuntu installation from prerequisites-already-installed timings and extra sign-in.",
+    "The owner reported a busy host and limited available memory. Contention and swapping were not measured.",
+    "Rendered videos still require perceptual review. Do not imply autonomous approval."
+  ]
+}
