@@ -4,24 +4,24 @@
     {
       "name": "Chrome desktop",
       "duration": 53.205,
-      "currentTime": 1.017652,
+      "currentTime": 1.315994,
       "width": 1280,
       "height": 720,
       "error": null,
       "seek": {
-        "time": 40,
+        "time": 41.436797,
         "error": null
       }
     },
     {
       "name": "WebKit phone emulation",
       "duration": 53.2,
-      "currentTime": 1.990702431001976,
+      "currentTime": 1.982664804004697,
       "width": 1280,
       "height": 720,
       "error": null,
       "seek": {
-        "time": 41.50104810600069,
+        "time": 41.45999805900109,
         "error": null
       }
     }
@@ -29,8 +29,8 @@
   "listening": "not_attested",
   "phone": "emulation, not physical device",
   "download": {
-    "sha256": "669506a4066569fc56e631de8fcfa1c2c61f05daf0db80d28c6ab18ea35ec365",
-    "bytes": 3046692,
+    "sha256": "5fd6291341c2262f67716878d03fc7a5f14070422c7df484465de5e17fb0d5e7",
+    "bytes": 2310191,
     "exactMatch": true,
     "rangeStatus": 206
   }
