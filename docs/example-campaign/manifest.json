@@ -1,0 +1,39 @@
+{
+  "schema": "kujo.publishing-house-factory.sample/v1",
+  "runId": "20261113-065550-16f495f8",
+  "originalPackageSha256": "c5859546f37719a02ac2c90d131fa3eaeabc465223d190f8523303a94c394250",
+  "status": "AWAITING_HUMAN_REVIEW",
+  "scope": "Selected unchanged output files plus the claim ledger; this is not the complete run package or publication approval.",
+  "files": [
+    {
+      "path": "article.md",
+      "sha256": "cd723c9c01e6f43d6b0fe07d01bf20b34e605e76a5ec28d71a86b865e5763211",
+      "bytes": 3779
+    },
+    {
+      "path": "newsletter.md",
+      "sha256": "7fe3fb064e030173c6ad71736333d3c40f2c90e8f019870a633c505aec9bdeb5",
+      "bytes": 2073
+    },
+    {
+      "path": "social.md",
+      "sha256": "d0df3bf5993e9a35e8099ed107c7be487bc0882728ab12441bc2bea738e50433",
+      "bytes": 2529
+    },
+    {
+      "path": "landing.html",
+      "sha256": "adcab1d888e8cb17f6ba47418071b861a3199025b27b51e95f5059a838b1aeaf",
+      "bytes": 2503
+    },
+    {
+      "path": "package-review.json",
+      "sha256": "f7a79d3262818c864a0767d11de1029e4e08caf4d09750867290f91f7cb92529",
+      "bytes": 310
+    },
+    {
+      "path": "evidence.json",
+      "sha256": "292b9be6ad3234d699ef09620f00d04fa67cfe57e04b64bec835dc50f8b5e5b2",
+      "bytes": 15290
+    }
+  ]
+}

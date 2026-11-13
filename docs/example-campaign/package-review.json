@@ -1,0 +1,14 @@
+{
+  "verdict": "pass",
+  "findings": [],
+  "dimensions": {
+    "consequence": "STRONG",
+    "distinctiveness": "ADEQUATE",
+    "insight": "ADEQUATE",
+    "defensibility": "STRONG",
+    "craft": "STRONG",
+    "brand_integrity": "STRONG",
+    "format_fidelity": "STRONG",
+    "strategic_purpose": "STRONG"
+  }
+}

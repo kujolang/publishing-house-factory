@@ -1,0 +1,133 @@
+{
+  "claims": [
+    {
+      "id": "local-inspectable-candidate-workflow",
+      "text": "VideoOps Factory turns sourced briefs and registered assets into landscape or portrait video candidates, creates an editable HyperFrames project, records elapsed time, and exposes evidence locally.",
+      "sourceId": "videoops",
+      "quote": "VideoOps Factory turns a sourced campaign brief and registered assets into landscape or portrait video candidates. It runs the existing Kujo VideoOps role contracts, builds an editable HyperFrames project, records elapsed time, and shows the evidence in a local Factory Floor.",
+      "qualification": "Supported by the captured README at commit dcf2dc4fa7311f59ba3dd16f58a227439a155979. This describes candidate generation, not approval or publication readiness. The local source artifact was captured 2026-11-13; the repository URL was supplied but not independently visited."
+    },
+    {
+      "id": "early-release-product-status",
+      "text": "The software is a standalone, local, early release with a deliberately limited role, not a universal workflow engine.",
+      "sourceId": "videoops",
+      "quote": "**Standalone, local, early release.** This repository owns the VideoOps runner. [Software Factory](https://github.com/kujolang/software-factory) remains the separate factory for software contracts and tests. Neither repository is a universal engine for every kind of work; they share patterns and Kujo components.",
+      "qualification": "Supported as the project's own product-status statement. Avoid implying maturity, general applicability, or integration with Software Factory beyond shared patterns and components."
+    },
+    {
+      "id": "setup-platforms-and-prerequisites",
+      "text": "Trying the example requires macOS or Linux, Git, Node 26.12.1 or a later 26.x release, Python 3.10 or later, FFmpeg/ffprobe 6 or later with libx264/AAC, and a Codex account; minimal Ubuntu also needs libatomic1, while native Windows is unsupported.",
+      "sourceId": "videoops",
+      "quote": "Use macOS or Linux, Git, Node **26.12.1 or later 26.x**, Python **3.10+**, FFmpeg/ffprobe **6+** with libx264/AAC, and a Codex account. Rendering downloads a browser when needed. Minimal Ubuntu also needs `libatomic1` for Node 26. See the [clean installation test](docs/ONBOARDING-BENCHMARK.md) for the complete tested prerequisites and timing scope. Windows users need a compatible Linux environment; native Windows is unsupported.",
+      "qualification": "The README supports these requirements. Only Ubuntu 24.04.5 x86-64 is documented as benchmark-tested; macOS compatibility is asserted but fresh macOS onboarding time was not measured. Do not describe native Windows as supported."
+    },
+    {
+      "id": "fresh-ubuntu-readiness-timings",
+      "text": "Two successful fresh Ubuntu trials reached verified readiness in 4m 49.765s and 5m 27.524s.",
+      "sourceId": "benchmark",
+      "quote": "| Bare Ubuntu to verified readiness | 4m 49.765s | 5m 27.524s |",
+      "qualification": "Observed values from two trials on one tested Linux environment, not a general performance promise. The interval includes specified dependencies and readiness checks but excludes Codex sign-in and infrastructure preparation described elsewhere."
+    },
+    {
+      "id": "prerequisites-installed-timings",
+      "text": "With system prerequisites already installed, clone-to-readiness took 3m 21.327s and 3m 06.326s in the two trials.",
+      "sourceId": "benchmark",
+      "quote": "| Clone to readiness, after system prerequisites | 3m 21.327s | 3m 06.326s |",
+      "qualification": "Keep this interval distinct from bare-Ubuntu installation. It is based on two observations on one Linux host and cannot establish typical or guaranteed setup time."
+    },
+    {
+      "id": "timing-signin-and-platform-exclusions",
+      "text": "The timing observations exclude fresh Codex sign-in and do not establish fresh macOS or Windows installation times.",
+      "sourceId": "benchmark",
+      "quote": "These are two observations on one host, not a universal promise. Do not drop the platform/prerequisite or sign-in qualification when using the numbers. Fresh macOS and Windows installs were not measured.",
+      "qualification": "Mandatory caveat for every use of the timing figures. Account creation, MFA, and human review time are also described in the benchmark as non-fixed-duration steps."
+    },
+    {
+      "id": "busy-host-unmeasured-contention",
+      "text": "The trials ran on a busy, resource-limited host, but CPU contention, memory pressure, and swapping were not recorded, so their timing effects are unknown.",
+      "sourceId": "benchmark",
+      "quote": "These runs used a busy, resource-limited host: the owner reported other applications running and limited available memory. The test container had a 3 GiB RAM limit inside a 4 GiB VM on a 16 GiB Intel Mac. CPU contention, memory pressure and swapping were not recorded, so their effect on the timings is unknown. This was not an idle-machine or optimized performance benchmark; a faster result on another machine has not been measured.",
+      "qualification": "The busy-host and limited-memory conditions were owner-reported; they were not independently measured. Do not infer that contention made the runs slower or predict performance on another machine."
+    },
+    {
+      "id": "repository-and-setup-command-sequence",
+      "text": "The documented trial path clones the public repository, enters its directory, installs dependencies, performs setup and login, runs doctor and verification, and starts the local application.",
+      "sourceId": "videoops",
+      "quote": "```sh\ngit clone https://github.com/kujolang/videoops-factory.git\ncd videoops-factory\nnpm ci\nnpm run setup\nnpm run login\nnpm run doctor\nnpm run verify\nnpm start\n```",
+      "qualification": "Quote the command block exactly and preserve its order. The repository URL and commands are documented instructions, not independently executed or verified in this review. Running them may download dependencies and a browser and requires the listed prerequisites and a Codex account."
+    },
+    {
+      "id": "local-viewer-address",
+      "text": "After startup, the documented local viewer address is http://127.0.0.1:4381.",
+      "sourceId": "videoops",
+      "quote": "Open `http://127.0.0.1:4381`. In another terminal:",
+      "qualification": "This is a local loopback address, not a hosted public service. Its availability was not independently tested here."
+    },
+    {
+      "id": "example-run-commands",
+      "text": "The README provides separate launch-brief and social-brief commands to run from another terminal.",
+      "sourceId": "videoops",
+      "quote": "```sh\nnpm run factory -- run examples/launch-brief.json\nnpm run factory -- run examples/social-brief.json\n```",
+      "qualification": "These are two alternative documented examples. They were not executed in this review. Each command is said to create a fresh run, so avoid implying that both operate on one shared run."
+    },
+    {
+      "id": "example-output-and-provider-cost-scope",
+      "text": "The example campaign produces two intentionally silent 12-second candidates at 1920×1080 and 1080×1920, uses the user's Codex account for model calls, and performs no paid media generation on this route.",
+      "sourceId": "videoops",
+      "quote": "Each command creates a fresh run under `.runtime/runs/`. The example campaign uses real Software Factory screenshots to make two intentionally silent, 12-second clips: 1920×1080 and 1080×1920. Model calls use your Codex account. No paid media generation occurs in this route.",
+      "qualification": "Supported for the documented example route only. Do not generalize the absence of paid media generation to every possible extension, or imply that Codex access itself is cost-free."
+    },
+    {
+      "id": "sequential-tool-free-model-proposals",
+      "text": "The workflow's model calls are sequential, tool-free proposals; they cannot edit the renderer or execute instructions embedded in the brief, and the viewer shows actual run records without simulating approval.",
+      "sourceId": "videoops",
+      "quote": "The model calls are sequential, tool-free proposals. They cannot edit the renderer or execute instructions from the brief. The viewer reads real run records; it does not simulate agents or approval.",
+      "qualification": "This is a documented trust-boundary claim. It does not prove that all implementation security properties have been independently audited. Do not describe the roles as parallel autonomous agents."
+    },
+    {
+      "id": "first-release-supported-output-scope",
+      "text": "The first release supports screenshot-led, monochrome launch clips with three to five scenes, a Kujo bumper, 30fps, and silent output lasting 3–60 seconds; other editing styles, footage timelines, and automatic narrated campaigns require an explicit contract extension.",
+      "sourceId": "videoops",
+      "quote": "Give your agent [the setup and brief guide](docs/AGENT-SETUP.md). Change the brief and register your own sourced assets without rewriting the controller. The first release supports screenshot-led, monochrome launch clips with three to five scenes, a Kujo bumper, 30fps, and 3–60-second silent output. Other editing styles, footage timelines and automatic narrated campaigns need an explicit extension to that contract.",
+      "qualification": "Treat this as the current supported contract, not a universal capability statement. Do not imply automatic narration, broad footage editing, or arbitrary visual styles."
+    },
+    {
+      "id": "successful-run-review-status",
+      "text": "A successful run ends at REVIEW_INCOMPLETE and provides a draft video plus supporting metadata, frames, checks, proposals, and handoffs.",
+      "sourceId": "videoops",
+      "quote": "A successful run ends at **REVIEW_INCOMPLETE**, with `output/draft.mp4`, metadata, frames, checks, role proposals and handoffs. Rendering and metadata checks cannot prove that a video looks or sounds right. A capable reviewer must review the exact candidate before promotion. See [Review and release](docs/REVIEW.md).",
+      "qualification": "This is the central human-review boundary. REVIEW_INCOMPLETE is not approval. Technical checks, rendering, and model critique do not establish perceptual quality or publication readiness."
+    },
+    {
+      "id": "edits-require-new-review",
+      "text": "Any edit creates a new candidate that requires a new review; an earlier candidate's approval decision cannot be transferred to the changed file.",
+      "sourceId": "videoops",
+      "quote": "The render job closes its temporary preview. Reopen it with `npx hyperframes preview /absolute/run/production/hyperframes`, or edit the scene project in `production/hyperframes/` with HyperFrames Studio or its desktop app. Edits produce a new candidate and require a new review. Never label a changed file approved using the old file's decision.",
+      "qualification": "Preserve candidate identity and review provenance. The preview command contains a placeholder absolute path that must be replaced with the actual run path."
+    },
+    {
+      "id": "verification-command-scope",
+      "text": "The verification command runs contract and viewer tests and checks local documentation links, while the doctor command checks pinned tools and source dependencies; production checks run during rendering with retained logs.",
+      "sourceId": "videoops",
+      "quote": "`npm run verify` runs the contract and viewer tests and checks local documentation links. `npm run doctor` checks pinned tools and source dependencies. Full production checks run during each render, with their logs retained in the run workspace.",
+      "qualification": "These checks provide technical evidence only. They do not replace perceptual review, rights clearance, privacy review, or publication approval."
+    },
+    {
+      "id": "benchmark-readiness-definition",
+      "text": "Benchmark readiness required tool installation, repository cloning, pinned dependency installation, doctor and verification checks, a browser download, a real render and decode, and successful Factory Floor page and API responses.",
+      "sourceId": "benchmark",
+      "quote": "A successful timed run must pass all of these:\n\n- Install Git, Python and venv, FFmpeg/ffprobe, Node 26.12.1, and the browser's system libraries.\n- Clone the public repository and install its pinned dependencies.\n- Pass `npm run doctor` and `npm run verify`, including the canonical review tests.\n- Download the HyperFrames browser into an empty cache.\n- Render and decode a three-second, 1080p project using the actual compiler, local font and logo.\n- Start the Factory Floor and receive successful responses from its page and run API.",
+      "qualification": "This defines the timed benchmark's technical endpoint. The three-second qualification render is not a production campaign and does not provide perceptual approval."
+    }
+  ],
+  "unknowns": [
+    "Recommendation: CONDITIONAL PASS for commissioning and drafting only; publication remains outside this role's authority. Conditions are exact sourcing of requirements, commands, timing intervals, capability limits, and the REVIEW_INCOMPLETE human-review boundary.",
+    "Blocker: assigned writer, supporting desks, desk capacity, commissioning approval, originality target, sensitive-claim review, and final approval path are not supplied.",
+    "Unavailable check: the repository URL, commit contents, commands, application startup, local viewer, example runs, rendered files, and linked supporting documents were not independently accessed or executed; assessment is limited to the two captured source artifacts.",
+    "Unavailable check: quotation rights, screenshot and brand-asset permissions, privacy exposure, and all third-party licensing beyond the README's self-reported MIT, SIL Open Font License, and first-party Kujo-mark statements were not independently verified.",
+    "Unavailable check: source freshness after capture at 2026-11-13T06:55:50Z is unknown. Preserve source hashes 6ad8d0c8a26a8bbb960f730f85f32974a2067b85b5e99386bc050d63e67affc0 and 16d70d22cdc815900078c694d33e7d8ee6120467a52ae390adb0707c4c509614 with the artifact version.",
+    "Escalate for human editorial or legal review if any artifact introduces confidential material, personal data, disputed quotations, third-party screenshots or marks without documented rights, security guarantees, performance comparisons, or claims of approval/publication readiness.",
+    "Quality assessment: practical utility, source traceability, consequence, and defensibility materially pass at the proposal stage. Distinctiveness, prose craft, perceptual video quality, rights clearance, privacy, and final factual freshness remain unverified until the article, newsletter, social posts, landing page, and exact media candidates exist.",
+    "Required next owner and stop condition: a commissioning editor must resolve ownership, capacity, rights/privacy review, and final approval routing. This evidence review stops at PROPOSE and does not authorize publication."
+  ]
+}

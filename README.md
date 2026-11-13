@@ -11,6 +11,10 @@ Publishing House Factory runs the existing Kujo Publishing House Operator with a
 
 **Standalone local release.** This repository packages one editorial workflow. [Software Factory](https://github.com/kujolang/software-factory) and [VideoOps Factory](https://github.com/kujolang/videoops-factory) remain separate. These factories share Kujo tools and design patterns; they are not three copies of one domain controller.
 
+![Publishing House Factory showing a completed local campaign](docs/factory-floor.png)
+
+[Inspect the live example campaign](docs/example-campaign/README.md) · [Verification evidence](docs/VERIFICATION.md)
+
 ## Start here
 
 Use macOS or Linux (including a compatible WSL environment), Git, Python **3.10+**, Node **26.12.1 or later 26.x**, and a Codex account. Setup downloads pinned source revisions and the npm-packaged Kujo runtime. You do not need sibling repositories, a Rust build, Docker, FFmpeg or a database. Minimal Linux installations may need `libatomic1` for Node.

@@ -1,0 +1,176 @@
+{
+  "schema": "kujo.publishing-house-factory.verification/v1",
+  "checkedAt": "2026-11-13T07:01:32.027829+00:00",
+  "implementationCommit": "40bf80de317335da909c429bc56a5afacb36b630",
+  "sourceLockSha256": "c1b35c2bf0ea933c83d644defe406458c14aa8caa651a4b69efa25eec50e8292",
+  "liveRun": {
+    "run": "20261113-065550-16f495f8",
+    "status": "approval_required",
+    "durationThisInvocationSeconds": 290.731,
+    "externalEffect": false,
+    "packageSha256": "c5859546f37719a02ac2c90d131fa3eaeabc465223d190f8523303a94c394250",
+    "package": "output/package.json",
+    "providerCalls": 12,
+    "reviewHistory": [
+      {
+        "proposal": "package-review-v1.json",
+        "verdict": "revise",
+        "findings": [
+          "Newsletter, paragraph 2: the trial path is not executable as written. It omits the repository URL, exact `git clone` and `cd` commands, `npm run` prefixes, and both example commands. Replace the shorthand with the documented command sequence and identify the example command(s) explicitly.",
+          "Social post “What setup actually requires,” paragraph 1: the claimed trial path is incomplete and ambiguous. Add the repository URL, exact clone and directory-change commands, full `npm run setup|login|doctor|verify`, `npm start`, and at least one exact `npm run factory -- run examples/...` command."
+        ]
+      },
+      {
+        "proposal": "package-review-v2.json",
+        "verdict": "pass",
+        "findings": []
+      },
+      {
+        "proposal": "review-v1.json",
+        "verdict": "revise",
+        "findings": [
+          "Remove or qualify “Setup timing is promising.” The sources provide two observations on one constrained host and explicitly do not establish typical performance; “promising” adds an unsupported favorable judgment.",
+          "Clarify the example output relationship. The article says to run one of two commands and then says “the campaign produces two” candidates, which can imply either command produces both. State that the commands create separate runs and that the documented example campaign collectively covers the two formats.",
+          "Explicitly identify VideoOps Factory as a standalone, local, early release. The article describes the narrow contract but omits this material product-status disclosure from the supplied source and brief."
+        ]
+      },
+      {
+        "proposal": "review-v2.json",
+        "verdict": "revise",
+        "findings": [
+          "The example-command paragraph says the two commands “collectively” cover the two output formats. The supplied README does not map either command to a particular format or establish that the formats should be attributed to the commands collectively. Remove “Collectively” and state only that the documented example campaign produces two candidates, while each command creates a separate fresh run."
+        ]
+      },
+      {
+        "proposal": "review-v3.json",
+        "verdict": "pass",
+        "findings": []
+      }
+    ],
+    "phases": [
+      {
+        "phase": "adaptation",
+        "durationSeconds": 35.266
+      },
+      {
+        "phase": "asset-production",
+        "durationSeconds": 0.004
+      },
+      {
+        "phase": "commissioning",
+        "durationSeconds": 19.561
+      },
+      {
+        "phase": "editorial-review",
+        "durationSeconds": 81.817
+      },
+      {
+        "phase": "evidence-dossier",
+        "durationSeconds": 62.692
+      },
+      {
+        "phase": "format-production",
+        "durationSeconds": 62.609
+      },
+      {
+        "phase": "primary-piece",
+        "durationSeconds": 19.59
+      }
+    ],
+    "publicationEffects": 0
+  },
+  "priorLiveRun": {
+    "run": "20261113-064635-a91f0a3c",
+    "status": "approval_required",
+    "durationSeconds": 219.968,
+    "packageSha256": "6b8b0702bd3e7396eb210520f46d58527981628032512cdd411bb8e75828aad3"
+  },
+  "portableCheckout": {
+    "ok": true,
+    "durationSeconds": 28.108,
+    "records": [
+      {
+        "command": [
+          "git",
+          "clone",
+          "--no-local"
+        ],
+        "seconds": 0.131,
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "npm",
+          "ci"
+        ],
+        "seconds": 4.352,
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "npm",
+          "run",
+          "setup"
+        ],
+        "seconds": 15.097,
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "npm",
+          "run",
+          "verify"
+        ],
+        "seconds": 8.525,
+        "exitCode": 0
+      }
+    ],
+    "scope": "Fresh checkout and dependencies on the same development host; prerequisites already installed. No sign-in or model calls."
+  },
+  "tests": {
+    "passed": 12,
+    "command": "npm run verify",
+    "realTools": true,
+    "testProposals": "synthetic; live example is separate"
+  },
+  "browser": {
+    "ok": true,
+    "results": [
+      {
+        "name": "desktop",
+        "viewport": {
+          "width": 1440,
+          "height": 1050
+        },
+        "artifactLinks": 6,
+        "overflow": false,
+        "consoleErrors": [],
+        "landing": true
+      },
+      {
+        "name": "mobile-emulation",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "artifactLinks": 6,
+        "overflow": false,
+        "consoleErrors": [],
+        "landing": true
+      }
+    ],
+    "hostGuard": true,
+    "providerPathDenied": true
+  },
+  "host": {
+    "os": "Darwin",
+    "architecture": "x86_64",
+    "reportedContext": "Shared busy host with limited available memory; contention and memory pressure were not measured."
+  },
+  "limits": [
+    "No external publication adapter or human approval",
+    "No independent factual or rights certification",
+    "Fresh checkout test reused installed prerequisites and host caches; clone used the local repository",
+    "Mobile browser coverage is emulation, not a physical phone"
+  ]
+}

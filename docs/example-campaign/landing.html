@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Build video candidates with evidence attached</title><style>body{max-width:760px;margin:60px auto;padding:24px;background:#111;color:#eee;font:19px/1.7 system-ui}small{color:#aaa}h1{line-height:1.1}p{white-space:pre-wrap}</style><small>KUJO / LOCAL REVIEW CANDIDATE</small><main><h1>Build video candidates with evidence attached</h1><p>VideoOps Factory is a standalone, local, early-release workflow for producing inspectable landscape and portrait launch-video candidates from sourced briefs and registered assets. It builds an editable HyperFrames project, records elapsed time, and displays actual run records in a local Factory Floor.</p><p>The current contract supports screenshot-led, monochrome, silent output with three to five scenes, a Kujo bumper, 30fps, and a 3–60-second duration. Footage timelines, other editing styles, and automatic narrated campaigns need an explicit extension. Model calls are sequential, tool-free proposals; according to the repository, they cannot edit the renderer or execute instructions embedded in a brief.</p><p>Before starting, install Git, Node 26.12.1 or later 26.x, Python 3.10+, and FFmpeg/ffprobe 6+ with libx264/AAC on macOS or Linux, and have a Codex account. Minimal Ubuntu also needs libatomic1. Native Windows is unsupported.</p><p>Documented setup:
+
+git clone https://github.com/kujolang/videoops-factory.git
+cd videoops-factory
+npm ci
+npm run setup
+npm run login
+npm run doctor
+npm run verify
+npm start
+
+Then open http://127.0.0.1:4381. These commands may download dependencies and a browser and were not independently executed for the reviewed article.</p><p>In another terminal, start one fresh example run:
+
+npm run factory -- run examples/launch-brief.json
+
+or:
+
+npm run factory -- run examples/social-brief.json
+
+The documented campaign produces separate, intentionally silent 12-second candidates at 1920×1080 and 1080×1920. It uses your Codex account and performs no paid media generation on this example route; that does not mean Codex access is free or that extensions avoid paid generation.</p><p>A successful run ends at REVIEW_INCOMPLETE, with a draft video and supporting metadata, frames, checks, proposals, and handoffs. Technical checks cannot establish that the candidate looks or sounds right. A capable reviewer must inspect the exact file before promotion, and every edit requires a new review.</p></main></html>
