@@ -48,7 +48,7 @@ def validate_brief(p):
         source=confined(p.parent,s['path'])
         if not source.is_file() or source.stat().st_size>100000:
             raise ValueError('Sources must be regular UTF-8 files under 100 KB')
-        text=source.read_text(encoding='utf-8')
+        text=source.read_bytes().decode('utf-8')
         if not text.strip() or '\x00' in text:
             raise ValueError('Source text is empty or binary')
         sources.append({**s,'text':text,'sha256':digest(source),'capturedAt':now(),'preservedPath':f'input/sources/{s["id"]}.txt'})

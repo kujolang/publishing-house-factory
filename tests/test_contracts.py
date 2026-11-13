@@ -55,7 +55,10 @@ class Contracts(unittest.TestCase):
             root=Path(d);source=write(root/'source.txt','A preserved source.')
             base={'schema':'kujo.publishing-house-factory.brief/v1','title':'Example','audience':'Readers','objective':'Explain','voice':'Direct','constraints':[],'sources':[{'id':'a','path':'source.txt','url':'https://example.com/source'}]}
             p=write(root/'brief.json',base)
-            validate_brief(p)
+            source.write_bytes(b'A preserved source.\r\nExact Windows line endings.\r\n')
+            _, packet=validate_brief(p)
+            self.assertIn('\r\n',packet[0]['text'])
+            self.assertEqual(packet[0]['sha256'],digest(source))
             base['sources'][0]['url']='javascript:alert(1)';write(p,base)
             with self.assertRaises(ValueError):validate_brief(p)
             base['sources'][0]['url']='https://example.com';source.unlink();write(p,base)
