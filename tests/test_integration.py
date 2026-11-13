@@ -63,6 +63,7 @@ class Integration(unittest.TestCase):
             tool(state,'versionseal','approve',{'human_actor':'test-only','package_id':'campaign','package_version':'1','manifest_checksum':'0'*64,'destination':'local-review-only','action':'publish'},record_id='approve-invalid-test',artifact=state/'output/package.json',actor='test-only')
         (state/'output/newsletter.md').write_text('tampered')
         with self.assertRaisesRegex(ValueError,'drift'):verify_package(state)
+        (state/'output/adaptations-v2/newsletter.md').write_text('changed versioned artifact')
         with self.assertRaises(ValueError):tool(state,'galleypack','validate')
 
     def test_lease_and_missing_adapter_fail_closed(self):
