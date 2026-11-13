@@ -46,7 +46,7 @@ The included brief uses preserved VideoOps README and onboarding evidence. Its o
 | Assets | Records the text-only production choice. No image or media provider runs. |
 | Review | A separate Standards & Evidence Editor call checks the draft. BluePencil records the review; at most two writer revisions follow. |
 | Adapt | A Franchise & Adaptation Editor produces a newsletter, three social posts and landing-page copy from the reviewed article. |
-| Package | A Copy Chief checks the adaptations. Trusted code renders escaped HTML. GalleyPack freezes the manifest; VersionSeal records an approval request. |
+| Package | A Copy Chief checks the adaptations, with up to two revisions. Trusted code renders escaped HTML. GalleyPack freezes the manifest; VersionSeal records an approval request. |
 | Approval | The canonical operator stops at `approval_required`. A human must review the exact package. |
 
 Model calls run sequentially as tool-free proposals. They cannot run source code, browse, modify the controller or publish. A source match proves that an excerpt exists; it does not prove that a claim is true. Model review is not human approval.

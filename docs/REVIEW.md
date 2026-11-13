@@ -17,7 +17,7 @@ The shipped CLI has no approval or publication command. The adapter also rejects
 | Operator process interrupted | Confirm it is stopped; inspect the lease before removing a stale lock, then resume. |
 | Primary review requests changes | The adapter allows two writer revisions and reviews each version independently. |
 | Review still blocks | Inspect the findings, improve the source packet or brief, and start a new run. |
-| Adaptation review requests changes | Start a new run with the feedback in the brief; no automatic adaptation rewrite loop is claimed. |
+| Adaptation review requests changes | The adapter allows two revisions and retains each version and review. If changes remain, improve the brief and start a new run. |
 | Source or output hash changes | Preserve the evidence and start a new run. Do not rewrite an old checksum. |
 | Canonical tool committed just before a crash | A repeated immutable ID may block if its factory receipt was not written. Inspect the tool's real record; preserve the run rather than forcing an overwrite. |
 

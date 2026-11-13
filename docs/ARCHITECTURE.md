@@ -22,7 +22,7 @@ StoryDesk owns commissioning records. Dossier preserves source and claim records
 
 The installed Dispatch and Agents SDK repositories satisfy the canonical operator's dependency layout and remain available for broader workflows. This adapter calls Codex directly for structured proposals; it does not claim to run its workers through Dispatch or Agents SDK. The canonical operator is the active control loop. PressWire is installed but no publication effects run. No fixture workflow is presented as live provider work.
 
-The adapter implements seven bounded phases. Writing and reviewing are separate sequential calls with fresh provider sessions. The primary article allows two revisions; adaptations receive a separate Copy Chief review and block if changes remain. A successful model review still leads to human review. The text-only asset stage records why no media generation is needed.
+The adapter implements seven bounded phases. Writing and reviewing are separate sequential calls with fresh provider sessions. The primary article allows two revisions; adaptations receive a separate Copy Chief review and up to two revisions before blocking if changes remain. A successful model review still leads to human review. The text-only asset stage records why no media generation is needed.
 
 Each run has preserved input, request/proposal pairs, tool inputs and receipts, phase artifacts, canonical operator state, local outputs and a package manifest. Retried phases reuse proposals only when their request matches. Completed phase artifacts and retained outputs are re-hashed before continuing. Canonical immutable tool records are validated on replay.
 

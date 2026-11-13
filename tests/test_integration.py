@@ -32,8 +32,9 @@ class Integration(unittest.TestCase):
             if key=='commission':return {'angle':'Explain scope','outline':['Observation'],'risks':[]}
             if key=='evidence':return {'claims':[claim],'unknowns':[]}
             if key.startswith('article'):return doc
-            if key.startswith('review') or key=='package-review':return good
-            if key=='adaptations':return {'newsletter':doc,'social':[doc,doc,doc],'landing':doc}
+            if key=='package-review-v1':return {**good,'verdict':'revise','findings':['Clarify the observation.']}
+            if key.startswith('review') or key.startswith('package-review'):return good
+            if key=='adaptations' or key.startswith('adaptations-revision'):return {'newsletter':doc,'social':[doc,doc,doc],'landing':doc}
             raise AssertionError(key)
         op=load_operator();h=op.House(state,DEPS)
         # Use real phases and canonical records, with synthetic model proposals only.
@@ -45,6 +46,10 @@ class Integration(unittest.TestCase):
                     self.assertEqual(perform(request),result)
             write(state/'phases'/f'{phase}.json',{'result':result})
         manifest_hash=verify_package(state)
+        self.assertTrue((state/'output/adaptations-v1/review.json').exists())
+        self.assertTrue((state/'output/adaptations-v2/review.json').exists())
+        self.assertEqual(read(state/'output/adaptations-v1/review.json')['verdict'],'revise')
+        self.assertEqual(read(state/'output/adaptations-v2/review.json')['verdict'],'pass')
         for name in ['dossier','galleypack','bluepencil','versionseal']:
             self.assertTrue(tool(state,name,'validate')['ok'])
         self.assertTrue((state/'storydesk/records/brief-campaign.json').exists())

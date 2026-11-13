@@ -174,17 +174,35 @@ def perform(request):
         if digest(state/'output/article.md')!=adaptations['parentSha256']:
             raise ValueError('Adaptation parent changed')
         reviewed_version=read(state/'phases/editorial-review.json')['result']['version']
-        outputs={'newsletter.md':markdown(adaptations['newsletter']),'social.md':'\n\n---\n\n'.join(markdown(d) for d in adaptations['social']),'landing.html':preview(adaptations['landing'])}
-        for name,content in outputs.items():
-            p=write(state/'output'/name,content)
-            tool(state,'galleypack','add',{'artifact_kind':name.split('.')[0],'parent_artifact_id':f'artifact-article-v{reviewed_version}','provenance':[{'kind':'adaptation','source':'article.md','checksum':adaptations['parentSha256']}]},record_id='artifact-'+name.replace('.','-'),artifact=p,actor='production-editor')
-        review=propose(state,'package-review','copy-chief','Independently check every adaptation against the sources and reviewed article. A short format must not turn a qualified observation into a universal promise. Check clarity, fidelity and unsupported claims. Pass only when findings are empty and all dimensions STRONG or ADEQUATE. List only actionable defects in findings, never praise or correctly disclosed limitations. Assess text against the supplied sources; this is not human approval or independent operational testing. Known review limits are not defects when described accurately.',{**context,'article':read(state/'output/article.json'),'adaptations':adaptations},REVIEW)
-        write(state/'output/package-review.json',review)
-        adaptation_path=write(state/'output/adaptations.json',adaptations)
-        tool(state,'galleypack','add',{'artifact_kind':'adaptations','parent_artifact_id':f'artifact-article-v{reviewed_version}','provenance':[{'kind':'adaptation','source':'article.md','checksum':adaptations['parentSha256']}]},record_id='artifact-adaptations',artifact=adaptation_path,actor='production-editor')
-        record_review(state,'package-review',review,adaptation_path,reviewer='copy-chief',artifact_id='artifact-adaptations')
-        if review['verdict']!='pass':
-            raise ValueError('Adaptations need editorial changes; inspect package-review and create a revised run')
+        evidence=read(state/'phases/evidence-dossier.json')['result']
+        for version in range(1,4):
+            stage=state/'output'/f'adaptations-v{version}'
+            outputs={'newsletter.md':markdown(adaptations['newsletter']),'social.md':'\n\n---\n\n'.join(markdown(d) for d in adaptations['social']),'landing.html':preview(adaptations['landing'])}
+            artifact_ids=[]
+            for name,content in outputs.items():
+                p=write(stage/name,content)
+                artifact_id='artifact-'+name.replace('.','-')+f'-v{version}'
+                tool(state,'galleypack','add',{'artifact_kind':name.split('.')[0],'parent_artifact_id':f'artifact-article-v{reviewed_version}','provenance':[{'kind':'adaptation','source':'article.md','checksum':adaptations['parentSha256']}]},record_id=artifact_id,artifact=p,actor='production-editor')
+                artifact_ids.append(artifact_id)
+            adaptation_path=write(stage/'adaptations.json',adaptations)
+            adaptation_id=f'artifact-adaptations-v{version}'
+            tool(state,'galleypack','add',{'artifact_kind':'adaptations','parent_artifact_id':f'artifact-article-v{reviewed_version}','provenance':[{'kind':'adaptation','source':'article.md','checksum':adaptations['parentSha256']}]},record_id=adaptation_id,artifact=adaptation_path,actor='production-editor')
+            artifact_ids.append(adaptation_id)
+            review=propose(state,f'package-review-v{version}','copy-chief','Independently check every adaptation against the sources and reviewed article. A short format must not turn a qualified observation into a universal promise. Check clarity, fidelity, complete procedural instructions and unsupported claims. Pass only when findings are empty and all dimensions STRONG or ADEQUATE. List only actionable defects in findings, never praise or correctly disclosed limitations. Assess text against supplied sources; this is not human approval or independent operational testing.',{**context,'article':read(state/'output/article.json'),'adaptations':adaptations},REVIEW)
+            review_id=f'review-formats-v{version}'
+            record_review(state,review_id,review,adaptation_path,reviewer='copy-chief',artifact_id=adaptation_id)
+            write(stage/'review.json',review)
+            if review['verdict']=='pass':
+                for name,content in outputs.items():write(state/'output'/name,content)
+                write(state/'output/package-review.json',review)
+                write(state/'output/adaptations.json',adaptations)
+                break
+            if version==3 or review['verdict']=='blocked':
+                raise ValueError('Adaptation review exhausted its revision allowance; inspect versioned reviews and create a revised brief')
+            adaptations=propose(state,f'adaptations-revision-v{version+1}','franchise-adaptation-editor','Fix every adaptation review finding. Keep the frozen claimIds and all material qualifications. Preserve complete command sequences including directory changes. Do not add unsupported claims. Return the newsletter, exactly three social posts and landing copy.',{**context,'article':read(state/'output/article.json'),'evidence':evidence,'adaptations':adaptations,'review':review},obj({'newsletter':DOCUMENT,'social':array(DOCUMENT),'landing':DOCUMENT}))
+            if len(adaptations['social'])!=3:raise ValueError('Exactly three social posts required')
+            for doc in [adaptations['newsletter'],*adaptations['social'],adaptations['landing']]:validate_document(doc,evidence['claims'])
+            adaptations['parentSha256']=digest(state/'output/article.md')
         files=[]
         for folder in ['input','output','phases','proposals','requests']:
             for p in sorted((state/folder).rglob('*')):
@@ -192,7 +210,7 @@ def perform(request):
                     files.append({'path':str(p.relative_to(state)),'sha256':digest(p),'bytes':p.stat().st_size})
         result={'schema':'kujo.publishing-house-factory.package/v1','status':'AWAITING_HUMAN_REVIEW','title':brief['title'],'parentArticleSha256':adaptations['parentSha256'],'files':files,'externalEffect':False}
         manifest=write(state/'output/package.json',result)
-        tool(state,'galleypack','freeze',{'package_id':'campaign','package_version':'1','artifact_ids':[f'artifact-article-v{reviewed_version}','artifact-newsletter-md','artifact-social-md','artifact-landing-html','artifact-adaptations'],'review_ids':[f'review-v{reviewed_version}','review-package-review'],'provenance':[{'kind':'local-campaign','source':'package.json'}]},record_id='package-campaign-frozen',artifact=manifest,actor='production-editor')
+        tool(state,'galleypack','freeze',{'package_id':'campaign','package_version':'1','artifact_ids':[f'artifact-article-v{reviewed_version}',*artifact_ids],'review_ids':[f'review-v{reviewed_version}',review_id],'provenance':[{'kind':'local-campaign','source':'package.json'}]},record_id='package-campaign-frozen',artifact=manifest,actor='production-editor')
         tool(state,'versionseal','request',{'package_id':'campaign','package_version':'1','manifest_checksum':digest(manifest),'destinations':['local-review-only'],'actions':['publish'],'requested_by':'production-editor','expires_at':(datetime.datetime.fromisoformat(source_packet[0]['capturedAt'].replace('Z','+00:00'))+datetime.timedelta(days=7)).replace(microsecond=0).isoformat().replace('+00:00','Z'),'unresolved_queries':['Human editorial review and destination setup are still required.'],'provenance':[{'kind':'local-review-candidate','source':'package.json'}]},record_id='request-campaign-approval',actor='production-editor')
         verify_package(state)
     else:
