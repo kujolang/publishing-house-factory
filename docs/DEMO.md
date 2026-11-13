@@ -19,3 +19,5 @@ The 1080p export is 1920×1080 at 30fps, with H.264 video and AAC audio. The sma
 HyperFrames lint, browser checks, metadata validation and full decode passed. Source frames and the rendered bumper were inspected. Audio measured −14.58 LUFS integrated and −1.75 dBTP. All five narration takes have generation-time paid-tier receipts; no voice clone or new music-provider call was used.
 
 Listening is not attested. Technical measurements and frame inspection are not independent human creative approval. Dense article and review shots establish the evidence; viewers can inspect the full text in the repository. The video manifest retains the exact hashes and this review limit.
+
+The public README player passed playback and seeking in desktop Chrome and WebKit phone emulation. The public phone download returned the exact local SHA-256 and supported HTTP 206 range requests. See [playback evidence](media/playback-verification.json). This is browser emulation, not a physical-phone test.
