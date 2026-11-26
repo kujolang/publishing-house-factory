@@ -1,0 +1,17 @@
+# Publishing House Factory hardening
+
+The baseline was public main at `38e7900a16f8482d12ad6b8b6a15f538d7ee3099`. Node 26.12.1, Python 3.10.5 and the npm-packaged Kujo 1.9.0 runtime ran the baseline with all ten public dependency checkouts installed. It passed 12 tests, including five real-tool integration tests backed by synthetic proposals, and checked links in 13 Markdown files. npm reported zero vulnerabilities in the installed dependency tree.
+
+| Area | Finding and change |
+| --- | --- |
+| Evidence and replay | Intake hashes the exact bytes it decodes and preserves. A phase checks the captured brief and source packet, compares its model-facing source text with the preserved UTF-8 file, and checks the registration against the brief. Legacy runs without a combined input seal still receive the source-byte and registration checks. Cached phases check their retained outputs before reuse. |
+| Execution and recovery | A factory lock serializes advance and resume while the canonical operator owns phase leases, retries and receipts. New work checks the recorded dependency lock and the actual installed commits before the operator runs. Already-complete local review packages can be verified without a provider call. Publication phases remain disabled. |
+| Package integrity and resources | Bounded regular-file reads and streaming SHA-256 checks use retained file or directory descriptors. Package verification checks the exact sealed inventory, including byte counts when present, and rejects duplicates, aliases, additions and special files. The final phase stores its own receipt after the manifest is sealed. |
+| Local review | The loopback server stems concurrency and bounds reads. Its API projects the fields the floor uses. The allowed source, review and draft routes remain available. Only the trusted floor executes scripts. Landing previews run under a sandbox, and delayed fetches stay attached to the selected campaign. |
+| Installation and maintenance | Setup rejects aliased directories, verifies the fetched commit before checkout and writes the setup receipt atomically. CI uses immutable upstream action revisions and disables persisted checkout credentials. Canonical editorial roles, proposal schemas, credentials and published example files are unchanged. |
+
+On macOS x64, nine status reads of a synthetic 450-run directory returned the same latest 100 runs. Median elapsed time decreased from 125.87 ms to 28.41 ms. Verifying a 32 MiB fixture preserved manifest digest `95c9d75148bfe28022caf195fb7341d56fd4bc2eb874c755d81fb2b494d4f481` and moved from 115.52 ms to 91.82 ms. Peak RSS across the two checks decreased from 51.8 MB to 18.0 MB.
+
+The real-tool suite exercised Dossier, StoryDesk, GalleyPack, BluePencil, VersionSeal and the canonical operator. It verified stored output drift, retry and review boundaries with synthetic proposals. A separate seven-test run against audited BluePencil `c11f709b2c48fbd53f991f72c99fd63eb7ea6ac0` also passed. The published dependency lock retains its original BluePencil pin for installed and in-progress campaigns. Product Launch Factory still consumes the supported Publishing House Python entry points.
+
+The local browser fixture exercised two selectable campaigns, a delayed response, one corrupt campaign, the permitted and excluded artifact routes, sandbox headers and a 390 px viewport. The six published example artifacts still match their recorded hashes. Account-backed proposals, human editorial decisions and publication were outside the deterministic verification.
