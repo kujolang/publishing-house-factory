@@ -23,12 +23,22 @@ MAX_PACKAGE_FILES = 4096
 MAX_PACKAGE_BYTES = 256 * 1024 * 1024
 PACKAGE_ROOTS = ('input', 'output', 'phases', 'proposals', 'requests')
 PACKAGE_EXCLUSIONS = {'output/package.json', 'phases/format-production.json'}
+DIRECTORY_FLAGS = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
 
 
 @contextmanager
-def open_regular(path, limit=MAX_ARTIFACT):
+def open_directory(path, *, parent_fd=None):
+    descriptor = os.open(path,DIRECTORY_FLAGS,dir_fd=parent_fd)
+    try:
+        yield descriptor
+    finally:
+        os.close(descriptor)
+
+
+@contextmanager
+def open_regular(path, limit=MAX_ARTIFACT, *, parent_fd=None):
     path = Path(path)
-    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent_fd)
     with os.fdopen(descriptor, 'rb') as handle:
         initial = os.fstat(descriptor)
         if not stat.S_ISREG(initial.st_mode) or initial.st_size > limit:
@@ -37,25 +47,25 @@ def open_regular(path, limit=MAX_ARTIFACT):
         def stamp(info):
             return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
         if (stamp(initial) != stamp(os.fstat(descriptor)) or
-                stamp(initial) != stamp(path.stat(follow_symlinks=False))):
+                stamp(initial) != stamp(os.stat(path, dir_fd=parent_fd, follow_symlinks=False))):
             raise ValueError('File changed while reading')
 
 
-def read_bytes(path, limit):
-    with open_regular(path, limit) as (handle, size):
+def read_bytes(path, limit, *, parent_fd=None):
+    with open_regular(path, limit, parent_fd=parent_fd) as (handle, size):
         value = handle.read(size + 1)
         if len(value) != size:
             raise ValueError('File size changed while reading')
     return value
 
 
-def read(path, limit=MAX_JSON):
-    return json.loads(read_bytes(path, limit).decode('utf-8'))
+def read(path, limit=MAX_JSON, *, parent_fd=None):
+    return json.loads(read_bytes(path, limit, parent_fd=parent_fd).decode('utf-8'))
 
 
-def fingerprint(path, limit=MAX_ARTIFACT):
+def fingerprint(path, limit=MAX_ARTIFACT, *, parent_fd=None):
     checksum = hashlib.sha256()
-    with open_regular(path, limit) as (handle, size):
+    with open_regular(path, limit, parent_fd=parent_fd) as (handle, size):
         remaining = size
         while remaining:
             chunk = handle.read(min(remaining, 1024*1024))
@@ -168,34 +178,38 @@ def package_files(state):
     total = 0
     entries = 0
 
-    def scan(root, depth):
+    def scan(directory, prefix, depth):
         nonlocal entries, total
         if depth > 32:
             raise ValueError('Package exceeds directory depth limit')
-        with os.scandir(root) as scan_entries:
+        with os.scandir(directory) as scan_entries:
             for entry in scan_entries:
                 entries += 1
                 if entries > MAX_PACKAGE_FILES * 2:
                     raise ValueError('Package exceeds entry limit')
-                p = Path(entry.path)
-                relative = p.relative_to(state).as_posix()
+                relative = prefix + entry.name
                 if entry.is_symlink():
                     raise ValueError('Package contains a symlink')
                 if entry.is_dir(follow_symlinks=False):
-                    scan(p, depth + 1)
+                    with open_directory(entry.name,parent_fd=directory) as child:
+                        scan(child,relative+'/',depth+1)
                 elif not entry.is_file(follow_symlinks=False):
                     raise ValueError('Package contains a special file')
                 elif relative not in PACKAGE_EXCLUSIONS:
                     if len(files) >= MAX_PACKAGE_FILES:
                         raise ValueError('Package exceeds file count')
-                    checksum, size = fingerprint(p, min(MAX_ARTIFACT, MAX_PACKAGE_BYTES - total))
+                    checksum, size = fingerprint(entry.name,min(MAX_ARTIFACT,MAX_PACKAGE_BYTES-total),parent_fd=directory)
                     total += size
                     files.append({'path':relative,'sha256':checksum,'bytes':size})
 
-    for folder in PACKAGE_ROOTS:
-        root = confined(state, folder)
-        if root.exists():
-            scan(root, 0)
+    with open_directory(state) as root:
+        for folder in PACKAGE_ROOTS:
+            try:
+                os.stat(folder,dir_fd=root,follow_symlinks=False)
+            except FileNotFoundError:
+                continue
+            with open_directory(folder,parent_fd=root) as directory:
+                scan(directory,folder+'/',0)
     return sorted(files, key=lambda entry: Path(entry['path']))
 
 

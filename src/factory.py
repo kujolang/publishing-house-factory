@@ -20,7 +20,7 @@ import re
 from threading import BoundedSemaphore
 from urllib.parse import urlsplit, unquote
 sys.dont_write_bytecode = True
-from common import ROOT, DEPS, RUNTIME, RUNS, KUJO, read, read_bytes, write, digest, confined, identifier, load_operator, tool, verify_package
+from common import ROOT, DEPS, RUNTIME, RUNS, KUJO, read, read_bytes, open_directory, write, digest, confined, identifier, load_operator, tool, verify_package
 
 
 def now():
@@ -64,7 +64,7 @@ def validate_brief(p):
     return b,sources
 
 
-def doctor():
+def dependency_checks():
     checks=[]
     lock=read(ROOT/'sources.lock.json')
     for name,s in lock['repositories'].items():
@@ -78,6 +78,11 @@ def doctor():
             ok=Path(root).resolve()==p.resolve() and head==s['commit'] and not dirty
         except (OSError,ValueError,subprocess.SubprocessError): ok=False
         checks.append({'name':name,'ok':ok})
+    return checks
+
+
+def doctor():
+    checks=dependency_checks()
     checks.append({'name':'phase-adapter','ok':os.access(ROOT/'bin/phase-adapter',os.X_OK)})
     checks.append({'name':'kujo-runtime','ok':KUJO.is_file()})
     if all(x['ok'] for x in checks):
@@ -95,6 +100,8 @@ def run_path(name):
 
 def initialize(brief_path):
     brief,sources=validate_brief(brief_path)
+    if not all(check['ok'] for check in dependency_checks()):
+        raise ValueError('Run npm run setup to restore the pinned dependencies')
     name=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d-%H%M%S')+'-'+uuid.uuid4().hex[:8]
     state=run_path(name)
     state.mkdir(parents=True,mode=0o700)
@@ -172,6 +179,8 @@ def advance(state, *, resume=False):
         marker=read(confined(state,'factory.json'))
         if marker.get('sourcesLockSha256')!=digest(ROOT/'sources.lock.json'):
             raise ValueError('Pinned dependencies changed; start a new campaign')
+        if not all(check['ok'] for check in dependency_checks()):
+            raise ValueError('Run npm run setup to restore the pinned dependencies')
         h=load_operator().House(state,DEPS)
         if resume and item['status']=='blocked':
             h.resume('campaign')
@@ -205,35 +214,48 @@ def run_phases(state,h):
 def status(*, public=False):
     if RUNS.is_symlink() or not RUNS.is_dir():
         return []
-    with os.scandir(RUNS) as entries:
-        names=heapq.nlargest(100,(entry.name for entry in entries if
-            re.fullmatch(r'[a-z0-9][a-z0-9-]{0,79}',entry.name) and entry.is_dir(follow_symlinks=False)))
     records=[]
-    for name in names:
-        try:
-            state=run_path(name)
-            marker=confined(state,'factory.json')
-            if not marker.is_file():
+    with open_directory(RUNS) as root:
+        with os.scandir(root) as entries:
+            names=heapq.nlargest(100,(entry.name for entry in entries if
+                re.fullmatch(r'[a-z0-9][a-z0-9-]{0,79}',entry.name) and entry.is_dir(follow_symlinks=False)))
+        for name in names:
+            try:
+                with open_directory(name,parent_fd=root) as campaign:
+                    records.append(status_record(name,campaign,public))
+            except (ValueError,OSError,KeyError,TypeError,AttributeError):
+                # Other campaigns remain visible if one is incomplete or corrupt.
                 continue
-            item=read(confined(state,'items/campaign.json'))
-            title=read(confined(state,'input/brief.json'),128000)['title']
-            if not isinstance(title,str) or not isinstance(item.get('status'),str) or type(item.get('phase_index')) is not int:
-                continue
-            summary_path=confined(state,'summary.json')
-            summary=read(summary_path) if summary_path.is_file() else None
-            if public:
-                view={key:item.get(key) for key in ('status','phase_index','updated_at')}
-                if item.get('blocker'):
-                    view['blocker']={'message':'Inspect the local campaign for recovery details.'}
-                summary=summary.get('packageSha256') if isinstance(summary,dict) else None
-                if not isinstance(summary,str) or not re.fullmatch('[a-f0-9]{64}',summary):
-                    summary=None
-                item=view
-            records.append({'run':name,'title':title,'item':item,'summary':summary})
-        except (ValueError,OSError,KeyError,TypeError,AttributeError):
-            # A corrupt or partial local campaign must not hide other campaigns.
-            continue
     return records
+
+
+def status_record(name,campaign,public):
+    marker=os.stat('factory.json',dir_fd=campaign,follow_symlinks=False)
+    if not stat.S_ISREG(marker.st_mode):
+        raise ValueError('Invalid campaign marker')
+    with open_directory('items',parent_fd=campaign) as items:
+        item=read('campaign.json',512*1024,parent_fd=items)
+    with open_directory('input',parent_fd=campaign) as inputs:
+        title=read('brief.json',128000,parent_fd=inputs)['title']
+    if (not isinstance(title,str) or not isinstance(item.get('status'),str) or
+            len(item['status'])>64 or type(item.get('phase_index')) is not int):
+        raise ValueError('Invalid campaign status')
+    try:
+        summary=read('summary.json',65536,parent_fd=campaign)
+    except FileNotFoundError:
+        summary=None
+    if public:
+        view={'status':item['status'],'phase_index':item['phase_index']}
+        if isinstance(item.get('updated_at'),str):
+            view['updated_at']=item['updated_at'][:64]
+        if item.get('blocker'):
+            view['blocker']={'message':'Inspect the local campaign for recovery details.'}
+        summary=summary.get('packageSha256') if isinstance(summary,dict) else None
+        if not isinstance(summary,str) or not re.fullmatch('[a-f0-9]{64}',summary):
+            summary=None
+        item=view
+        title=title[:240]
+    return {'run':name,'title':title,'item':item,'summary':summary}
 
 
 PREVIEWS={
