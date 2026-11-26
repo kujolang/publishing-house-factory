@@ -1,10 +1,12 @@
 """Trusted local I/O and canonical tool boundaries."""
+from contextlib import contextmanager
 import hashlib
 import importlib.util
 import json
 import os
 from pathlib import Path
 import re
+import stat
 import subprocess
 import tempfile
 
@@ -15,22 +17,74 @@ RUNS = RUNTIME / 'runs'
 KUJO = DEPS / 'kujo/target/release/kujo'
 
 
-def read(p):
-    return json.loads(Path(p).read_text())
+MAX_ARTIFACT = 64 * 1024 * 1024
+MAX_JSON = 8 * 1024 * 1024
+MAX_PACKAGE_FILES = 4096
+MAX_PACKAGE_BYTES = 256 * 1024 * 1024
+PACKAGE_ROOTS = ('input', 'output', 'phases', 'proposals', 'requests')
+PACKAGE_EXCLUSIONS = {'output/package.json', 'phases/format-production.json'}
 
 
-def digest(p):
-    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+@contextmanager
+def open_regular(path, limit=MAX_ARTIFACT):
+    path = Path(path)
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(descriptor, 'rb') as handle:
+        initial = os.fstat(descriptor)
+        if not stat.S_ISREG(initial.st_mode) or initial.st_size > limit:
+            raise ValueError('Expected a bounded regular file')
+        yield handle, initial.st_size
+        def stamp(info):
+            return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+        if (stamp(initial) != stamp(os.fstat(descriptor)) or
+                stamp(initial) != stamp(path.stat(follow_symlinks=False))):
+            raise ValueError('File changed while reading')
+
+
+def read_bytes(path, limit):
+    with open_regular(path, limit) as (handle, size):
+        value = handle.read(size + 1)
+        if len(value) != size:
+            raise ValueError('File size changed while reading')
+    return value
+
+
+def read(path, limit=MAX_JSON):
+    return json.loads(read_bytes(path, limit).decode('utf-8'))
+
+
+def fingerprint(path, limit=MAX_ARTIFACT):
+    checksum = hashlib.sha256()
+    with open_regular(path, limit) as (handle, size):
+        remaining = size
+        while remaining:
+            chunk = handle.read(min(remaining, 1024*1024))
+            if not chunk:
+                raise ValueError('File was truncated while reading')
+            remaining -= len(chunk)
+            checksum.update(chunk)
+        if handle.read(1):
+            raise ValueError('File grew while reading')
+    return checksum.hexdigest(), size
+
+
+def digest(path):
+    return fingerprint(path)[0]
 
 
 def write(p, value):
     p = Path(p)
     p.parent.mkdir(parents=True, exist_ok=True)
-    text = value if isinstance(value, str) else json.dumps(value, indent=2, ensure_ascii=False) + '\n'
+    if isinstance(value, bytes):
+        raw = value
+    elif isinstance(value, str):
+        raw = value.encode('utf-8')
+    else:
+        raw = (json.dumps(value, indent=2, ensure_ascii=False) + '\n').encode('utf-8')
     fd, tmp = tempfile.mkstemp(dir=p.parent, prefix='.write-')
     try:
-        with os.fdopen(fd, 'w') as f:
-            f.write(text)
+        with os.fdopen(fd, 'wb') as f:
+            f.write(raw)
         os.replace(tmp, p)
     finally:
         if Path(tmp).exists():
@@ -45,7 +99,10 @@ def identifier(s):
 
 
 def confined(base, relative):
-    base = Path(base).resolve()
+    base = Path(base)
+    if base.is_symlink() or not isinstance(relative, str) or not relative or '\\' in relative or '\x00' in relative:
+        raise ValueError('Invalid artifact path')
+    base = base.resolve()
     p = Path(relative)
     if p.is_absolute() or '..' in p.parts:
         raise ValueError('Path must stay inside its root')
@@ -102,14 +159,64 @@ def tool(state, name, command, payload=None, record_id=None, artifact=None, acto
     return response
 
 
+def package_files(state):
+    state = Path(state)
+    if state.is_symlink():
+        raise ValueError('Expected a plain campaign directory')
+    state = state.resolve()
+    files = []
+    total = 0
+    entries = 0
+
+    def scan(root, depth):
+        nonlocal entries, total
+        if depth > 32:
+            raise ValueError('Package exceeds directory depth limit')
+        with os.scandir(root) as scan_entries:
+            for entry in scan_entries:
+                entries += 1
+                if entries > MAX_PACKAGE_FILES * 2:
+                    raise ValueError('Package exceeds entry limit')
+                p = Path(entry.path)
+                relative = p.relative_to(state).as_posix()
+                if entry.is_symlink():
+                    raise ValueError('Package contains a symlink')
+                if entry.is_dir(follow_symlinks=False):
+                    scan(p, depth + 1)
+                elif not entry.is_file(follow_symlinks=False):
+                    raise ValueError('Package contains a special file')
+                elif relative not in PACKAGE_EXCLUSIONS:
+                    if len(files) >= MAX_PACKAGE_FILES:
+                        raise ValueError('Package exceeds file count')
+                    checksum, size = fingerprint(p, min(MAX_ARTIFACT, MAX_PACKAGE_BYTES - total))
+                    total += size
+                    files.append({'path':relative,'sha256':checksum,'bytes':size})
+
+    for folder in PACKAGE_ROOTS:
+        root = confined(state, folder)
+        if root.exists():
+            scan(root, 0)
+    return sorted(files, key=lambda entry: Path(entry['path']))
+
+
 def verify_package(state):
     state = Path(state)
-    manifest = state / 'output/package.json'
-    m = read(manifest)
-    if m.get('schema') != 'kujo.publishing-house-factory.package/v1' or not m.get('files'):
+    raw = read_bytes(confined(state, 'output/package.json'), MAX_JSON)
+    m = json.loads(raw.decode('utf-8'))
+    if (not isinstance(m, dict) or m.get('schema') != 'kujo.publishing-house-factory.package/v1' or
+            m.get('externalEffect', False) is not False or
+            m.get('status', 'AWAITING_HUMAN_REVIEW') != 'AWAITING_HUMAN_REVIEW' or
+            not isinstance(m.get('files'), list) or not 1 <= len(m['files']) <= MAX_PACKAGE_FILES):
         raise ValueError('Invalid package manifest')
-    for entry in m['files']:
-        p = confined(state, entry['path'])
-        if not p.is_file() or digest(p) != entry['sha256']:
-            raise ValueError(f'Package drift: {entry["path"]}')
-    return digest(manifest)
+    actual = {entry['path']:entry for entry in package_files(state)}
+    for expected in m['files']:
+        if not isinstance(expected, dict) or not isinstance(expected.get('path'), str):
+            raise ValueError('Invalid package entry')
+        relative = expected['path']
+        entry = actual.pop(relative, None)
+        if (entry is None or entry['sha256'] != expected.get('sha256') or
+                ('bytes' in expected and (type(expected['bytes']) is not int or entry['bytes'] != expected['bytes']))):
+            raise ValueError(f'Package drift: {relative}')
+    if actual:
+        raise ValueError('Package drift: unexpected retained files')
+    return hashlib.sha256(raw).hexdigest()

@@ -1,29 +1,51 @@
 #!/usr/bin/env python3
 import sys
+import os
+sys.dont_write_bytecode = True
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'src'))
+import hashlib
 import json,time
-from common import read,write,digest,confined,verify_package
-from editorial import perform
+from common import read,write,digest,confined,verify_package,read_bytes
+from editorial import perform,campaign_inputs
 try:
-    request=json.loads(sys.stdin.read(2000000))
+    raw=sys.stdin.buffer.read(2_000_001)
+    if len(raw)>2_000_000:
+        raise ValueError('Phase request exceeds byte limit')
+    request=json.loads(raw)
     if request['schema_name']!='publishing-house.phase-request' or request['schema_version']!='1.0.0':
         raise ValueError('Unsupported phase request')
-    state=Path(request['state_root']).resolve()
     phase=request['phase']
     if phase not in ['commissioning','evidence-dossier','primary-piece','asset-production','editorial-review','adaptation','format-production']:
         raise ValueError('Publication phases are disabled')
+    raw_state=Path(request['state_root'])
+    state=raw_state.resolve()
+    if raw_state.is_symlink() or not raw_state.is_absolute():
+        raise ValueError('Expected an absolute plain campaign directory')
+    if os.environ.get('PUBLISHING_FACTORY_RUN_ROOT',str(state))!=str(state):
+        raise ValueError('Phase request names another campaign')
+    if request['item']['id']!='campaign':
+        raise ValueError('Unexpected campaign item')
     started=time.monotonic()
     # Verify every completed phase and its retained output before resuming.
     for receipt in request['item'].get('receipts',[]):
-        p=Path(receipt['artifact']).resolve()
-        if not p.is_relative_to(state) or digest(p)!=receipt['sha256']:
+        path=Path(receipt['artifact'])
+        if path.is_relative_to(raw_state/'phases'):
+            relative=path.relative_to(raw_state)
+        elif path.is_relative_to(state/'phases'):
+            relative=path.relative_to(state)
+        else:
+            raise ValueError('Prior phase receipt is outside its artifact directory')
+        p=confined(state,relative.as_posix())
+        payload=read_bytes(p,8*1024*1024)
+        if hashlib.sha256(payload).hexdigest()!=receipt['sha256']:
             raise ValueError('Prior phase artifact changed')
-        for entry in read(p).get('outputs',[]):
+        for entry in json.loads(payload).get('outputs',[]):
             if digest(confined(state,entry['path']))!=entry['sha256']:
                 raise ValueError('Prior output changed')
-    artifact=state/'phases'/f'{phase}.json'
+    artifact=confined(state,f'phases/{phase}.json')
     if artifact.exists():
+        campaign_inputs(state)
         result=read(artifact)
         for entry in result.get('outputs',[]):
             if digest(confined(state,entry['path']))!=entry['sha256']:
@@ -38,8 +60,11 @@ try:
         write(artifact,{'phase':phase,'result':result,'durationSeconds':round(time.monotonic()-started,3),'outputs':paths})
     print(json.dumps({'ok':True,'data':{'schema_name':'publishing-house.phase-receipt','schema_version':'1.0.0','item_id':request['item']['id'],'phase':phase,'artifact':str(artifact),'sha256':digest(artifact),'external_effect':False}}))
 except Exception as e:
-    if 'state' in locals() and state.is_dir():
+    if 'state' in locals() and (state/'factory.json').is_file() and os.environ.get('PUBLISHING_FACTORY_RUN_ROOT')==str(state):
         import uuid
-        write(state/'failures'/f'{uuid.uuid4().hex}.json',{'phase':request.get('phase'),'error':str(e)[:800]})
+        try:
+            write(confined(state,f'failures/{uuid.uuid4().hex}.json'),{'phase':request.get('phase'),'error':str(e)[:800]})
+        except (OSError,ValueError):
+            pass
     print(json.dumps({'ok':False,'error_code':'factory_phase_failed','error':str(e)[:800]}))
     sys.exit(1)

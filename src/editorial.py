@@ -1,11 +1,12 @@
 """Bounded editorial adapter. Models return data; this module owns all writes."""
 import datetime
 import html
+import hashlib
 import json
 from pathlib import Path
 import subprocess
 import time
-from common import ROOT, read, write, digest, confined, identifier, tool, verify_package
+from common import ROOT, read, read_bytes, write, digest, confined, identifier, tool, verify_package, package_files
 
 
 def obj(properties):
@@ -108,16 +109,40 @@ def record_review(state, key, review, artifact, reviewer="standards-evidence-edi
     tool(state,'bluepencil','review',{'reviewer_id':reviewer,'artifact_id':artifact_id or key,'rubric_version':'publishing-house-quality-rubric-v1','verdict':verdict,'dimensions':review['dimensions'],'blocking_findings':[], 'requested_changes':review['findings'],'provenance':[{'kind':'model-review','source':str(artifact),'checksum':digest(artifact)}]},record_id=key if key.startswith('review-') else 'review-'+key,artifact=artifact,actor=reviewer)
 
 
+def campaign_inputs(state):
+    brief_raw=read_bytes(confined(state,'input/brief.json'),128000)
+    source_raw=read_bytes(confined(state,'input/sources.json'),8*1024*1024)
+    marker=read(confined(state,'factory.json'))
+    expected=marker.get('inputSha256')
+    if expected is not None and expected!={
+        'brief':hashlib.sha256(brief_raw).hexdigest(),
+        'sources':hashlib.sha256(source_raw).hexdigest(),
+    }:
+        raise ValueError('Captured campaign inputs changed; start a new run')
+    brief=json.loads(brief_raw.decode('utf-8'))
+    source_packet=json.loads(source_raw.decode('utf-8'))
+    sources={}
+    if not isinstance(source_packet,list) or not 1<=len(source_packet)<=10:
+        raise ValueError('Invalid captured source packet')
+    for source in source_packet:
+        source_id=identifier(source['id'])
+        relative=f'input/sources/{source_id}.txt'
+        if source_id in sources or source['preservedPath']!=relative:
+            raise ValueError('Invalid captured source identity')
+        raw=read_bytes(confined(state,relative),100000)
+        if hashlib.sha256(raw).hexdigest()!=source['sha256'] or raw.decode('utf-8')!=source['text']:
+            raise ValueError('Source snapshot changed')
+        sources[source_id]=source
+    registration=[{k:source[k] for k in ('id','path','url')} for source in source_packet]
+    if registration!=brief['sources']:
+        raise ValueError('Source provenance differs from the captured brief')
+    return brief,source_packet,sources
+
+
 def perform(request):
     state=Path(request['state_root']).resolve()
-    brief=read(state/'input/brief.json')
     phase=request['phase']
-    source_packet=read(state/'input/sources.json')
-    sources={s['id']:s for s in source_packet}
-    for s in source_packet:
-        p=confined(state,s['preservedPath'])
-        if digest(p)!=s['sha256']:
-            raise ValueError('Source snapshot changed')
+    brief,source_packet,sources=campaign_inputs(state)
     context={'brief':brief,'sources':source_packet}
     result={}
     if phase=='commissioning':
@@ -203,11 +228,7 @@ def perform(request):
             if len(adaptations['social'])!=3:raise ValueError('Exactly three social posts required')
             for doc in [adaptations['newsletter'],*adaptations['social'],adaptations['landing']]:validate_document(doc,evidence['claims'])
             adaptations['parentSha256']=digest(state/'output/article.md')
-        files=[]
-        for folder in ['input','output','phases','proposals','requests']:
-            for p in sorted((state/folder).rglob('*')):
-                if p.is_file() and p.name!='package.json':
-                    files.append({'path':str(p.relative_to(state)),'sha256':digest(p),'bytes':p.stat().st_size})
+        files=package_files(state)
         result={'schema':'kujo.publishing-house-factory.package/v1','status':'AWAITING_HUMAN_REVIEW','title':brief['title'],'parentArticleSha256':adaptations['parentSha256'],'files':files,'externalEffect':False}
         manifest=write(state/'output/package.json',result)
         tool(state,'galleypack','freeze',{'package_id':'campaign','package_version':'1','artifact_ids':[f'artifact-article-v{reviewed_version}',*artifact_ids],'review_ids':[f'review-v{reviewed_version}',review_id],'provenance':[{'kind':'local-campaign','source':'package.json'}]},record_id='package-campaign-frozen',artifact=manifest,actor='production-editor')

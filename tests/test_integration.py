@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'src'))
 from common import ROOT,DEPS,KUJO,read,write,digest,tool,load_operator,verify_package
-from factory import initialize
+from factory import initialize,advance,runner_lock
 from editorial import perform,DIMENSIONS,record_review
 
 @unittest.skipUnless(KUJO.is_file(),'Run npm run setup for real-tool tests')
@@ -65,6 +65,32 @@ class Integration(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'drift'):verify_package(state)
         (state/'output/adaptations-v2/newsletter.md').write_text('changed versioned artifact')
         with self.assertRaises(ValueError):tool(state,'galleypack','validate')
+
+    def test_changed_packet_cannot_replace_source_evidence(self):
+        state=self.state()
+        packet_path=state/'input/sources.json'
+        packet=read(packet_path)
+        packet[0]['text']='A different benign evidence sentence.'
+        write(packet_path,packet)
+        request={'state_root':str(state),'phase':'commissioning'}
+        with patch('editorial.propose') as proposal:
+            with self.assertRaisesRegex(ValueError,'Captured campaign inputs changed'):
+                perform(request)
+            marker=state/'factory.json'
+            old=read(marker);del old['inputSha256'];write(marker,old)
+            with self.assertRaisesRegex(ValueError,'Source snapshot changed'):
+                perform(request)
+            proposal.assert_not_called()
+
+    def test_factory_lock_and_frozen_pins_precede_operator_work(self):
+        state=self.state()
+        with runner_lock(state), self.assertRaisesRegex(ValueError,'Another factory runner'):
+            advance(state)
+        marker=state/'factory.json'
+        value=read(marker);value['sourcesLockSha256']='0'*64;write(marker,value)
+        with patch('factory.load_operator') as operator, self.assertRaisesRegex(ValueError,'Pinned dependencies changed'):
+            advance(state,resume=True)
+        operator.assert_not_called()
 
     def test_lease_and_missing_adapter_fail_closed(self):
         state=self.state();op=load_operator();h=op.House(state,DEPS)

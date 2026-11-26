@@ -47,6 +47,17 @@ class Contracts(unittest.TestCase):
             root=Path(d);p=write(root/'output/article.md','original')
             write(root/'output/package.json',{'schema':'kujo.publishing-house-factory.package/v1','files':[{'path':'output/article.md','sha256':digest(p)}]})
             self.assertEqual(len(verify_package(root)),64)
+            extra=write(root/'output/unlisted.md','Unlisted addition')
+            with self.assertRaisesRegex(ValueError,'unexpected retained files'):
+                verify_package(root)
+            extra.unlink()
+            manifest=root/'output/package.json'
+            original={'path':'output/article.md','sha256':digest(p),'bytes':p.stat().st_size}
+            for entries in [[original,original],[{**original,'bytes':0}]]:
+                write(manifest,{'schema':'kujo.publishing-house-factory.package/v1','files':entries})
+                with self.assertRaisesRegex(ValueError,'Package drift'):
+                    verify_package(root)
+            write(manifest,{'schema':'kujo.publishing-house-factory.package/v1','files':[original]})
             p.write_text('changed')
             with self.assertRaisesRegex(ValueError,'drift'):verify_package(root)
 
